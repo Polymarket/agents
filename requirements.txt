@@ -1,3 +1,4 @@
 fastapi==0.111.0
 py-clob-client==0.17.1
+pydantic==2.8.2
 
