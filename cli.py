@@ -13,7 +13,7 @@ def get_relevant_news(event_description: str):
 
 @app.command()
 def evaluate_trade(market_summary: str, relevant_info: str):
-    print(f"market_summary: str = {market_summary}, relevant_info: str = {market_summary}")
+    print(f"market_summary: str = {market_summary}, relevant_info: str = {relevant_info}")
     print(f"{generate_simple_ai_trader()}")
 
 @app.command()
