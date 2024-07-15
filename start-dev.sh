@@ -1,2 +1,2 @@
 python setup.py
-fastapi dev main.py
+fastapi dev server.py
