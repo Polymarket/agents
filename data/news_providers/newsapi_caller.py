@@ -1,11 +1,12 @@
 import json
-from newsapi import NewsApiClient
-from newsapi import const
-import urllib.parse
+import os
 import pathlib
+from dotenv import load_dotenv
+from newsapi import NewsApiClient
 
 from data.news_providers.types import Article
 
+load_dotenv()
 
 class NewsApiCaller:
     def __init__(self) -> None:
@@ -14,7 +15,7 @@ class NewsApiCaller:
             config_json = json.load(config_file)
             self.configs = config_json["news_api"]
         
-        self.API = NewsApiClient(api_key=self.configs["api_key"])
+        self.API = NewsApiClient(os.getenv("NEWSAPI_API_KEY"))
         self.categories = {"business", "entertainment", "general", "health", "science", "sports", "technology"}
     
     def get_articles_for_cli_keywords(self, keywords):
