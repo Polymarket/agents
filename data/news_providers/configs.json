@@ -1,0 +1,11 @@
+{
+    "news_api": {
+        "api_key": "f73d1e73d0244077a5ad09b1d1b068cf",
+        "language": "en",
+        "country": "us",
+        "top_headlines": "https://newsapi.org/v2/top-headlines?country=us&apiKey=f73d1e73d0244077a5ad09b1d1b068cf",
+        "base_url": "https://newsapi.org/v2/"
+    },
+    "polymarket": {
+    }
+}
