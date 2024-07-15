@@ -110,15 +110,23 @@ class Polymarket():
                         "rewardsMaxSpread": float(market['rewardsMaxSpread']),
                         "volume": float(market['volume']),
                         "spread": float(market['spread']),
-                        "outcome_a": str(market['outcomes'][0]),
-                        "outcome_b": str(market['outcomes'][1]),
-                        "outcome_a_price": str(market['outcomePrices'][0]),
-                        "outcome_b_price": str(market['outcomePrices'][1])
-                    }      
+                        "outcomes": str(market['outcomes']),
+                        "outcome_prices": str(market['outcomePrices']),
+                    }
                     markets.append(SimpleMarket(**market_data)) 
                 except:
                     pass  
         return markets
+
+    def filter_markets_for_trading(self, markets: list[SimpleMarket]):
+        tradeable_markets = []
+        for market in markets:
+            if (
+                market.active and
+                market.deployed
+            ):
+                tradeable_markets.append(market)
+        return tradeable_markets
 
     def get_market(self, market_id: int) -> SimpleMarket:
         raise Exception()

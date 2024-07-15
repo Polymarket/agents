@@ -13,6 +13,7 @@ polymarket = Polymarket()
 def get_all_markets(limit: int = 5, sort_by: str = "volume"):
     print(f"limit: int = {limit}, sort_by: str = {sort_by}")
     markets = polymarket.get_all_markets()
+    markets = polymarket.filter_markets_for_trading(markets)
     if (sort_by == "volume"):
         markets = sorted(markets, key=lambda x: x.volume, reverse=True)
     markets = markets[:limit]
