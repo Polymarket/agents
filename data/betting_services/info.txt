@@ -1,0 +1,2 @@
+This folder was created as a placeholder for integration of various external betting services such as sportsbooks
+that may be useful to carry out a form of sportsbook arbitrage.

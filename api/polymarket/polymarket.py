@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from py_clob_client.constants import AMOY
 
 from api.polymarket.types import SimpleMarket
+from api.polymarket.types import SimpleEvent
 
 load_dotenv()
 
@@ -84,13 +85,15 @@ def gamma():
 def main():
     # auth()
     # test()
-    gamma()
+    # gamma()
+    print(Polymarket().get_all_events())
 
 class Polymarket():
 
     def __init__(self):
         self.gamma_url = "https://gamma-api.polymarket.com"
         self.gamma_markets_endpoint = self.gamma_url + "/markets"
+        self.gamma_events_endpoint = self.gamma_url + "/events"
 
     def get_all_markets(self) -> list[SimpleMarket]:
         markets = []
@@ -131,11 +134,44 @@ class Polymarket():
     def get_market(self, market_id: int) -> SimpleMarket:
         raise Exception()
 
-    def get_all_events(self):
-        raise Exception()
+    def get_all_events(self) -> list[SimpleEvent]:
+        events = []
+        res = httpx.get(self.gamma_events_endpoint)
+        if (res.status_code == 200):
+            for event in res.json():
+                try:
+                    event_data = {
+                        "id": int(event['id']),
+                        "ticker": event['ticker'],
+                        "slug": event['slug'],
+                        "title": event['title'],
+                        "description": event['description'],
+                        "active": event['active'],
+                        "closed": event['closed'],
+                        "archived": event['archived'],
+                        "new": event['new'],
+                        "featured": event['featured'],
+                        "restricted": event['restricted'],
+                        "end": event['endDate'],
+                        "markets": ','.join([x['id'] for x in event['markets']]),
+                    }
+                    events.append(SimpleEvent(**event_data)) 
+                except:
+                    pass 
+        return events
 
     def get_event(self):
         raise Exception()
+
+    def filter_events_for_trading(self, events: list[SimpleEvent]):
+        tradeable_events = []
+        for event in events:
+            if (
+                event.active and
+                not event.restricted
+            ):
+                tradeable_events.append(event)
+        return tradeable_events
 
 if __name__ == "__main__":
     main()

@@ -65,3 +65,18 @@ class ComplexMarket(BaseModel):
     price: float
     tax: Union[float, None] = None
 
+class SimpleEvent(BaseModel):
+    id: int
+    ticker: str
+    slug: str
+    title: str
+    description: str
+    end: str
+    active: bool
+    closed: bool
+    archived: bool
+    restricted: bool
+    new: bool
+    featured: bool
+    restricted: bool
+    markets: str
