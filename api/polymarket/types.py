@@ -36,10 +36,8 @@ class SimpleMarket(BaseModel):
     rewardsMaxSpread: float
     volume: float
     spread: float
-    outcome_a: str
-    outcome_b: str
-    outcome_a_price: str
-    outcome_b_price: str
+    outcomes: str
+    outcome_prices: str
 
 class ComplexMarket(BaseModel):
     id: int
