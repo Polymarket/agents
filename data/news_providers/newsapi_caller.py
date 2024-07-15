@@ -43,11 +43,9 @@ class NewsApiCaller:
         # Default to top articles if no start and end dates are given for search
         if not date_start and not date_end:
             for option in market_options:
-                # print("\n[get_articles_for_options] No date range given. Searching top headlines.\n")
                 response_dict = self.API.get_top_headlines(q=option.strip(),
                                                   language=self.configs["language"],
                                                   country=self.configs["country"])
-                # print(response_dict)
                 articles = response_dict["articles"]
                 all_articles[option] = articles
         else:
@@ -73,58 +71,3 @@ class NewsApiCaller:
             pass
         
         return news_category
-        
-    # TODO: parse query from polymarket market info, distill into queries, encode as url querystring
-    def parse_query(self, market_info):
-        query = market_info
-        return query
-
-def test():
-    client = NewsApiCaller()
-    # Placeholders for payload fetched from Polymarket
-    market = "Presidential Election Winner 2024"
-    options = [
-        "Donald Trump",
-        "Joe Biden",
-        market,
-        # "Kamala Harris",
-        # "Michelle Obama",
-        # "Other Democrat Politician",
-    ]
-
-    other_options = [
-        "Donald Trump",
-        "Joe Biden",
-        "Kamala Harris",
-        "Michelle Obama",
-        "Other Democrat Politician",
-    ]
-
-    all_articles = client.get_articles_for_options(options)
-    print(json.dumps(all_articles))
-    # query_params = client.parse_query(market_title)
-
-    # top_headlines = API.get_top_headlines(
-    #     q=None,
-    #     qintitle=None,
-    #     sources=None,
-    #     language = client.configs["language"],
-    #     country = client.configs["country"],
-    #     category=None,
-    #     page_size=None,
-    #     page=None)
-    
-    # all_articles = API.get_everything(
-    #     q=None,
-    #     qintitle=None,
-    #     sources=None,
-    #     domains=None,
-    #     exclude_domains=None,
-    #     from_param=None,
-    #     to=None,
-    #     language=None,
-    #     sort_by=None,
-    #     page=None,
-    #     page_size=None)
-
-# test()
