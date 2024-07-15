@@ -1,5 +1,6 @@
 # interface for stitching prompts together
 
+
 def generate_simple_ai_trader(market_description: str, relevant_info: str) -> str:
     return f"""
     

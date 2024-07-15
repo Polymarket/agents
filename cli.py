@@ -1,11 +1,22 @@
-from ai.llm.prompts import generate_simple_ai_trader
 import typer
+from devtools import pprint
+
+import pdb
+
+from api.polymarket.polymarket import Polymarket
+from ai.llm.prompts import generate_simple_ai_trader
 
 app = typer.Typer()
+polymarket = Polymarket()
 
 @app.command()
-def get_events(limit: int = 5, sort_by: str = "daily_vol"):
+def get_all_markets(limit: int = 5, sort_by: str = "volume"):
     print(f"limit: int = {limit}, sort_by: str = {sort_by}")
+    markets = polymarket.get_all_markets()
+    if (sort_by == "volume"):
+        markets = sorted(markets, key=lambda x: x.volume, reverse=True)
+    markets = markets[:limit]
+    pprint(markets)
 
 @app.command()
 def get_relevant_news(event_description: str):
