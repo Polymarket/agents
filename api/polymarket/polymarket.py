@@ -86,7 +86,48 @@ def main():
     # test()
     gamma()
 
+class Polymarket():
 
+    def __init__(self):
+        self.gamma_url = "https://gamma-api.polymarket.com"
+        self.gamma_markets_endpoint = self.gamma_url + "/markets"
+
+    def get_all_markets(self) -> list[SimpleMarket]:
+        markets = []
+        res = httpx.get(self.gamma_markets_endpoint)
+        if (res.status_code == 200):
+            for market in res.json():
+                try:
+                    market_data = {
+                        "id": int(market['id']),
+                        "question": market['question'],
+                        "end": market['endDate'],
+                        "description": market['description'],
+                        "active": market['active'],
+                        "deployed": market['deployed'],
+                        "funded": market['funded'],
+                        "rewardsMinSize": float(market['rewardsMinSize']),
+                        "rewardsMaxSpread": float(market['rewardsMaxSpread']),
+                        "volume": float(market['volume']),
+                        "spread": float(market['spread']),
+                        "outcome_a": str(market['outcomes'][0]),
+                        "outcome_b": str(market['outcomes'][1]),
+                        "outcome_a_price": str(market['outcomePrices'][0]),
+                        "outcome_b_price": str(market['outcomePrices'][1])
+                    }      
+                    markets.append(SimpleMarket(**market_data)) 
+                except:
+                    pass  
+        return markets
+
+    def get_market(self, market_id: int) -> SimpleMarket:
+        raise Exception()
+
+    def get_all_events(self):
+        raise Exception()
+
+    def get_event(self):
+        raise Exception()
 
 if __name__ == "__main__":
     main()
