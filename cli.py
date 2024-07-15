@@ -1,3 +1,4 @@
+import json
 import typer
 from devtools import pprint
 
@@ -6,8 +7,11 @@ import pdb
 from api.polymarket.polymarket import Polymarket
 from ai.llm.prompts import generate_simple_ai_trader
 
+from data.news_providers.newsapi_caller import NewsApiCaller
+
 app = typer.Typer()
 polymarket = Polymarket()
+newsapi_client = NewsApiCaller()
 
 @app.command()
 def get_all_markets(limit: int = 5, sort_by: str = "volume"):
@@ -19,8 +23,10 @@ def get_all_markets(limit: int = 5, sort_by: str = "volume"):
     pprint(markets)
 
 @app.command()
-def get_relevant_news(event_description: str):
-    print(f"event_description: str = {event_description}")
+def get_relevant_news(keywords: str):
+    # print(f"keywords: str = {keywords}")
+    articles = newsapi_client.get_articles_for_cli_keywords(keywords)
+    pprint(articles)
 
 @app.command()
 def evaluate_trade(market_summary: str, relevant_info: str):

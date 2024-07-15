@@ -1,7 +1,7 @@
 import json
 import requests
 
-class NewsClientFactory(Market):
+class NewsClientFactory():
     def __init__(self) -> None:
         with open("./configs.json", "r+") as config_file:
             self.configs = json.load(config_file)
