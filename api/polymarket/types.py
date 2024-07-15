@@ -36,10 +36,8 @@ class SimpleMarket(BaseModel):
     rewardsMaxSpread: float
     volume: float
     spread: float
-    outcome_a: str
-    outcome_b: str
-    outcome_a_price: str
-    outcome_b_price: str
+    outcomes: str
+    outcome_prices: str
 
 class ComplexMarket(BaseModel):
     id: int
@@ -67,3 +65,18 @@ class ComplexMarket(BaseModel):
     price: float
     tax: Union[float, None] = None
 
+class SimpleEvent(BaseModel):
+    id: int
+    ticker: str
+    slug: str
+    title: str
+    description: str
+    end: str
+    active: bool
+    closed: bool
+    archived: bool
+    restricted: bool
+    new: bool
+    featured: bool
+    restricted: bool
+    markets: str

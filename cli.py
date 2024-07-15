@@ -15,6 +15,7 @@ newsapi_client = NewsApiCaller()
 def get_all_markets(limit: int = 5, sort_by: str = "volume"):
     print(f"limit: int = {limit}, sort_by: str = {sort_by}")
     markets = polymarket.get_all_markets()
+    markets = polymarket.filter_markets_for_trading(markets)
     if (sort_by == "volume"):
         markets = sorted(markets, key=lambda x: x.volume, reverse=True)
     markets = markets[:limit]
@@ -24,6 +25,16 @@ def get_all_markets(limit: int = 5, sort_by: str = "volume"):
 def get_relevant_news(keywords: str):
     articles = newsapi_client.get_articles_for_cli_keywords(keywords)
     pprint(articles)
+
+@app.command()
+def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
+    print(f"limit: int = {limit}, sort_by: str = {sort_by}")
+    events = polymarket.get_all_events()
+    events = polymarket.filter_events_for_trading(events)
+    if (sort_by == "number_of_markets"):
+        events = sorted(events, key=lambda x: len(x.markets), reverse=True)
+    events = events[:limit]
+    pprint(events)
 
 @app.command()
 def evaluate_trade(market_summary: str, relevant_info: str):
