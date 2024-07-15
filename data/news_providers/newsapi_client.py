@@ -15,8 +15,7 @@ class NewsApiClient:
 
     def get_top_articles_for_market(self, market_object):
         news_category = self.get_category(market_object)
-        self.API.get_top_headlines(language=)
-
+        self.API.get_top_headlines(language='en')
     
     def get_articles_for_options(self, market_options, date_start=None, date_end=None):
         all_articles = {}
