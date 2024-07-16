@@ -6,9 +6,11 @@ import pdb
 from api.polymarket.polymarket import Polymarket
 from ai.llm.prompts import generate_simple_ai_trader
 from ai.llm.simpleagent import get_llm_response
+from data.news_providers.newsapi_caller import NewsApiCaller
 
 app = typer.Typer()
 polymarket = Polymarket()
+newsapi_client = NewsApiCaller()
 
 
 @app.command()
