@@ -5,6 +5,7 @@ import pdb
 
 from api.polymarket.polymarket import Polymarket
 from ai.llm.prompts import generate_simple_ai_trader
+from ai.llm.simpleagent import get_llm_response
 
 app = typer.Typer()
 polymarket = Polymarket()
