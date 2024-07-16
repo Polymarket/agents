@@ -5,7 +5,6 @@ import pdb
 
 from api.polymarket.polymarket import Polymarket
 from ai.llm.prompts import generate_simple_ai_trader
-from ai.llm.simpleagent import get_llm_response
 
 app = typer.Typer()
 polymarket = Polymarket()
@@ -23,8 +22,20 @@ def get_all_markets(limit: int = 5, sort_by: str = "volume"):
 
 
 @app.command()
-def get_relevant_news(event_description: str):
-    print(f"event_description: str = {event_description}")
+def get_relevant_news(keywords: str):
+    articles = newsapi_client.get_articles_for_cli_keywords(keywords)
+    pprint(articles)
+
+
+@app.command()
+def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
+    print(f"limit: int = {limit}, sort_by: str = {sort_by}")
+    events = polymarket.get_all_events()
+    events = polymarket.filter_events_for_trading(events)
+    if sort_by == "number_of_markets":
+        events = sorted(events, key=lambda x: len(x.markets), reverse=True)
+    events = events[:limit]
+    pprint(events)
 
 
 @app.command()
