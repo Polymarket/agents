@@ -9,4 +9,3 @@ langchainhub
 langchain-community
 tavily-python
 newsapi-python==0.2.7
-
