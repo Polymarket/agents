@@ -7,5 +7,6 @@ devtools==0.12.2
 langchain
 langchainhub
 langchain-openai
+langchain-anthropic
 langchain-community
 tavily-python
