@@ -21,3 +21,6 @@ def get_llm_response(user_input: str) -> str:
     messages = [system_message, human_message]
     result = llm.invoke(messages)
     return result.content
+
+
+# add prompts on market data and news data
