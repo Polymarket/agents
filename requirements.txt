@@ -6,6 +6,7 @@ httpx
 devtools==0.12.2
 langchain
 langchainhub
+langchain-openai
 langchain-community
 tavily-python
 newsapi-python==0.2.7

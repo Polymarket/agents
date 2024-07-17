@@ -9,24 +9,7 @@ load_dotenv()
 openai_api_key = os.getenv("OPEN_API_KEY")
 tavily_api_key = os.getenv("TAVILY_API_KEY")
 
-os.environ["OPENAI_API_KEY"] = openai_api_key
-os.environ["TAVILY_API_KEY"] = tavily_api_key
-
 llm = OpenAI(temperature=0)
-
-tools = load_tools([""])
-
-# what is a tool like this
-name = tools.name
-description = tools.description
-
-agent = initialize_agents(tools, llm, agent="zero-shot-react-description", verbose=True)
-
-agent.agent.llm_chain.prompt.template
-
-agent.run(
-    "What is the probability that Biden drops out of the US presidential election?"
-)
 
 
 ## Helper Utilities ##
