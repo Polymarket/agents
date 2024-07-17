@@ -15,6 +15,9 @@ newsapi_client = NewsApiCaller()
 
 @app.command()
 def get_all_markets(limit: int = 5, sort_by: str = "volume"):
+    """
+    Query Polymarket's markets
+    """
     print(f"limit: int = {limit}, sort_by: str = {sort_by}")
     markets = polymarket.get_all_markets()
     markets = polymarket.filter_markets_for_trading(markets)
@@ -26,12 +29,18 @@ def get_all_markets(limit: int = 5, sort_by: str = "volume"):
 
 @app.command()
 def get_relevant_news(keywords: str):
+    """
+    Use NewsAPI to query the internet
+    """
     articles = newsapi_client.get_articles_for_cli_keywords(keywords)
     pprint(articles)
 
 
 @app.command()
 def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
+    """
+    Query Polymarket's events
+    """
     print(f"limit: int = {limit}, sort_by: str = {sort_by}")
     events = polymarket.get_all_events()
     events = polymarket.filter_events_for_trading(events)
