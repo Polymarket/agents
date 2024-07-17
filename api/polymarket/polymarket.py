@@ -3,12 +3,15 @@
 
 import os
 import pdb
+from pprint import pprint
 
 import httpx
 from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import ApiCreds
 from dotenv import load_dotenv
 from py_clob_client.constants import AMOY
+from py_order_utils.builders import OrderBuilder
+from py_order_utils.signer import Signer
 
 from api.polymarket.types import SimpleMarket
 from api.polymarket.types import SimpleEvent
@@ -95,27 +98,30 @@ class Polymarket():
         self.gamma_markets_endpoint = self.gamma_url + "/markets"
         self.gamma_events_endpoint = self.gamma_url + "/events"
 
+        self.clob_url = "https://clob.polymarket.com"
+        self.clob_auth_endpoint = self.clob_url + "/auth/api-key"
+
+        self.chain_id = 137 # POLYGON
+        self.private_key = os.getenv("POLYGON_WALLET_PRIVATE_KEY")
+        
+        self._init_api_keys()
+
+    def _init_api_keys(self):
+        self.client = ClobClient(self.clob_url, key=self.private_key, chain_id=self.chain_id)
+        self.credentials = self.client.create_or_derive_api_creds()
+        self.client.set_api_creds(self.credentials)
+        # print(self.credentials)
+
+    def get_api_key(self):
+        return self.client.create_or_derive_api_creds()
+
     def get_all_markets(self) -> list[SimpleMarket]:
         markets = []
         res = httpx.get(self.gamma_markets_endpoint)
         if (res.status_code == 200):
             for market in res.json():
                 try:
-                    market_data = {
-                        "id": int(market['id']),
-                        "question": market['question'],
-                        "end": market['endDate'],
-                        "description": market['description'],
-                        "active": market['active'],
-                        "deployed": market['deployed'],
-                        "funded": market['funded'],
-                        "rewardsMinSize": float(market['rewardsMinSize']),
-                        "rewardsMaxSpread": float(market['rewardsMaxSpread']),
-                        "volume": float(market['volume']),
-                        "spread": float(market['spread']),
-                        "outcomes": str(market['outcomes']),
-                        "outcome_prices": str(market['outcomePrices']),
-                    }
+                    market_data = self.map_api_to_market(market)
                     markets.append(SimpleMarket(**market_data)) 
                 except:
                     pass  
@@ -131,8 +137,35 @@ class Polymarket():
                 tradeable_markets.append(market)
         return tradeable_markets
 
-    def get_market(self, market_id: int) -> SimpleMarket:
-        raise Exception()
+    def get_market(self, token_id: str) -> SimpleMarket:
+        params = {
+            "clob_token_ids": token_id
+        }
+        res = httpx.get(self.gamma_markets_endpoint, params=params)
+        if (res.status_code == 200):
+            data = res.json()
+            market = data[0]
+            return self.map_api_to_market(market, token_id)
+
+    def map_api_to_market(self, market, token_id) -> SimpleMarket:
+        market = {
+            "id": int(market['id']),
+            "question": market['question'],
+            "end": market['endDate'],
+            "description": market['description'],
+            "active": market['active'],
+            "deployed": market['deployed'],
+            "funded": market['funded'],
+            "rewardsMinSize": float(market['rewardsMinSize']),
+            "rewardsMaxSpread": float(market['rewardsMaxSpread']),
+            "volume": float(market['volume']),
+            "spread": float(market['spread']),
+            "outcomes": str(market['outcomes']),
+            "outcome_prices": str(market['outcomePrices']),
+        }
+        if (token_id):
+            market["token_id"] = token_id
+        return market
 
     def get_all_events(self) -> list[SimpleEvent]:
         events = []
@@ -140,21 +173,7 @@ class Polymarket():
         if (res.status_code == 200):
             for event in res.json():
                 try:
-                    event_data = {
-                        "id": int(event['id']),
-                        "ticker": event['ticker'],
-                        "slug": event['slug'],
-                        "title": event['title'],
-                        "description": event['description'],
-                        "active": event['active'],
-                        "closed": event['closed'],
-                        "archived": event['archived'],
-                        "new": event['new'],
-                        "featured": event['featured'],
-                        "restricted": event['restricted'],
-                        "end": event['endDate'],
-                        "markets": ','.join([x['id'] for x in event['markets']]),
-                    }
+                    event_data = self.map_api_to_event(event)
                     events.append(SimpleEvent(**event_data)) 
                 except:
                     pass 
@@ -162,6 +181,23 @@ class Polymarket():
 
     def get_event(self):
         raise Exception()
+
+    def map_api_to_event(self, event) -> SimpleEvent:
+        return {
+            "id": int(event['id']),
+            "ticker": event['ticker'],
+            "slug": event['slug'],
+            "title": event['title'],
+            "description": event['description'],
+            "active": event['active'],
+            "closed": event['closed'],
+            "archived": event['archived'],
+            "new": event['new'],
+            "featured": event['featured'],
+            "restricted": event['restricted'],
+            "end": event['endDate'],
+            "markets": ','.join([x['id'] for x in event['markets']]),
+        }
 
     def filter_events_for_trading(self, events: list[SimpleEvent]):
         tradeable_events = []
@@ -173,5 +209,55 @@ class Polymarket():
                 tradeable_events.append(event)
         return tradeable_events
 
+    def get_sampling_simplified_markets(self):
+        markets = []
+        raw_sampling_simplified_markets = self.client.get_sampling_simplified_markets()
+        for raw_market in raw_sampling_simplified_markets['data']:
+            token_one_id = raw_market['tokens'][0]['token_id']
+            market = self.get_market(token_one_id)
+            markets.append(market)
+        return markets
+
+    def get_orderbook(self, token_id: str):
+        return self.client.get_order_book(token_id)
+
+    def get_orderbook_price(self, token_id: str):
+        return self.client.get_price(token_id)
+
+    def build_order(self):
+        exchange_address = "0x...."
+        chain_id = 80002
+        signer = Signer("0x....")
+        builder = OrderBuilder(exchange_address, chain_id, signer)
+
+        # Create and sign the order
+        # order = builder.build_signed_order(
+        #     OrderData(
+        #         ...
+        #     )
+        # )
+
+        # Generate the Order and Signature json to be sent to the CLOB API
+        # pprint(json.dumps(order.dict()))
+
 if __name__ == "__main__":
-    main()
+    p = Polymarket()
+    k = p.get_api_key()
+    m = p.get_sampling_simplified_markets()
+    # print(m)
+    # m = p.get_market('11015470973684177829729219287262166995141465048508201953575582100565462316088')
+    t = m[0]['token_id']
+    o = p.get_orderbook(t)
+    pdb.set_trace()
+
+    """
+    
+    (Pdb) pprint(o)
+            OrderBookSummary(
+                market='0x26ee82bee2493a302d21283cb578f7e2fff2dd15743854f53034d12420863b55', 
+                asset_id='11015470973684177829729219287262166995141465048508201953575582100565462316088', 
+                bids=[OrderSummary(price='0.01', size='600005'), OrderSummary(price='0.02', size='200000'), ...
+                asks=[OrderSummary(price='0.99', size='100000'), OrderSummary(price='0.98', size='200000'), ...
+            )
+    
+    """
