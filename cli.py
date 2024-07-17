@@ -42,6 +42,12 @@ def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
 
 
 @app.command()
+def estimate_price(market_summary: str, market_id: int):
+    print(f"market_summary: str = {market_summary}, market_id: int = {market_id}")
+    pprint(price)
+
+
+@app.command()
 def evaluate_trade(market_summary: str, relevant_info: str):
     print(
         f"market_summary: str = {market_summary}, relevant_info: str = {relevant_info}"

@@ -21,6 +21,15 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
+
+def get_llm_response(user_input: str) -> str:
+    system_message = SystemMessage(content=str(prompts.market_analyst))
+    human_message = HumanMessage(content=user_input)
+    messages = [system_message, human_message]
+    result = llm.invoke(messages)
+    return result.content
+
+
 # Initialize the tool with your API key
 search = TavilySearchResults(tavily_api_key=tavily_api_key)
 

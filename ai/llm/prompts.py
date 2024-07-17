@@ -20,3 +20,8 @@ def market_analyst() -> str:
     You are a market analyst that takes a description of an event and produces a market forecast. 
     Assign a probability estimate to the event occurring described by the user
     """
+
+def sentiment_analyzer(market_description: str, ) -> str:
+    return f"""
+
+

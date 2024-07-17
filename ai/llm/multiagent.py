@@ -1,10 +1,14 @@
 import os
 import json
+import operator
+import functools
+from typing import Literal
 from dotenv import load_dotenv
 from langchain_openai import OpenAI
 from langchain_core.messages import AIMessage, BaseMessage, ChatMessage, FunctionMessage, HumanMessage
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt.tool_executor import ToolExecutor, ToolInvocation
+
 
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.agents import create_openai_functions_agent, AgentExecutor
@@ -50,6 +54,37 @@ chart_agent = create_agent(
  [python_repl]
 )
 
+## Create Graph ##
+# Define state
+
+# This defines the object that is passed between each node
+# in the graph. We will create different nodes for each agent and tool
+class AgentState(TypedDict):
+    messages: Annotated[Sequence[BaseMessage], operator.add]
+    sender: str
+
+
+## Define Agent Nodes ##
+def agent_node(state, agent, name):
+  result = agent.invoke(state)
+  # convert the agent output into a format that is suitable to append to global state
+  if isinstance(result, ToolMessage):
+    pass
+  else:
+    result = AIMessage(**result.dict(exclude={"type", "name"}), name=name)
+
+## Define Edge Logic ##
+
+def router(state) -> Literal["call_tool", "__end__", "continue"]:
+  #This is the router
+  messages = state["messages"]
+  last_message = messages[-1]
+  if last_message.tools_calls:
+    # the previous agent is invoking a tool
+    return "call_tool"
+  if "FINAL ANSWER" in last_message.content:
+    #Any agent decided the work is done
+
 # Define Tool Node #
 tools = [tavily_tool, python_repl]
 def tool_node(state):
@@ -61,4 +96,4 @@ messages = state["messages"]
 
 
 # INVOKE ##
-with graph created, we can now invoke it and see how it performs #
+# with graph created, we can now invoke it and see how it performs #
