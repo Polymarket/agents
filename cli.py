@@ -29,7 +29,6 @@ def get_relevant_news(keywords: str):
     articles = newsapi_client.get_articles_for_cli_keywords(keywords)
     pprint(articles)
 
-
 @app.command()
 def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
     print(f"limit: int = {limit}, sort_by: str = {sort_by}")
