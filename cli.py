@@ -6,7 +6,7 @@ import pdb
 from api.polymarket.polymarket import Polymarket
 from ai.llm.prompts import generate_simple_ai_trader
 
-from ai.llm.simpleagent import get_llm_response, get_superforecast
+from ai.llm.simpleagent import get_llm_response, get_superforecast, get_polymarket_llm
 
 # from ai.llm.langchainagent import get_llm_response
 from data.news_providers.newsapi_caller import NewsApiCaller
@@ -95,6 +95,15 @@ def ask_llm(user_input: str):
     """
     response = get_llm_response(user_input)
     print(f"LLM Response: {response}")
+
+
+@app.command()
+def ask_polymarket_llm(user_input: str):
+    """
+    What types of markets do you want trade?
+    """
+    response = get_polymarket_llm(user_input=user_input)
+    print(f"LLM + current markets&events response: {response}")
 
 
 if __name__ == "__main__":

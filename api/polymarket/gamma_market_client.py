@@ -75,7 +75,7 @@ class GammaMarketClient:
         except Exception as err:
             print(f"[parse_event] Caught exception: {err}")
 
-    def get_markets(self, querystring_params={"limit": 2}):
+    def get_markets(self, querystring_params={"limit": 3}):
         response = httpx.get(self.gamma_markets_endpoint, params=querystring_params)
         if response.status_code == 200:
             markets: list[Market] = []
@@ -104,7 +104,7 @@ class GammaMarketClient:
     def get_all_events(self, limit=2):
         return self.get_events(querystring_params={"limit": limit})
 
-    def get_current_markets(self, limit=2):
+    def get_current_markets(self, limit=4):
         return self.get_markets(
             querystring_params={
                 "active": True,
@@ -114,7 +114,7 @@ class GammaMarketClient:
             }
         )
 
-    def get_current_events(self, limit=2):
+    def get_current_events(self, limit=4):
         return self.get_events(
             querystring_params={
                 "active": True,

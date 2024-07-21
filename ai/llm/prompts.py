@@ -1,4 +1,5 @@
 # interface for stitching prompts together
+from pydantic import BaseModel
 
 
 def generate_simple_ai_trader(market_description: str, relevant_info: str) -> str:
@@ -77,20 +78,23 @@ def superforecaster(event_title: str, market_question: str, outcome: str) -> str
     """
 
 
-def multiquery() -> str:
+def prompts_polymarket(data1: str, data2: str, user_input: str) -> str:
+    current_market_data = str(data1)
+    current_event_data = str(data2)
     return f"""
-    You are an AI language model assistant. Your task is to generate five different versions of the
-    given user question to retrieve relevant information from a vectorstore.
+    You are an AI assistant for users of a prediction market called Polymarket.
+    Users want to place bets based on their beliefs of market outcomes such as political or sports events.
+    
+    Here is data for current Polymarket markets {current_market_data} and 
+    current Polymarket events {current_event_data}.
+
+    Help users identify markets to trade based on their interests or queries.
+    Provide specific information for markets including probabilities of outcomes.
+    
     """
 
 
 def scenario_planner() -> str:
     return f""" 
     You are a scenario planner
-    """
-
-
-def related_markets() -> str:
-    return f"""
-    You are an prediction market analyst.
     """
