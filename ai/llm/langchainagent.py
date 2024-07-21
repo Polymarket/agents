@@ -1,35 +1,39 @@
-import os
-from dotenv import load_dotenv
-from langchain_openai import OpenAI
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.agents import create_openai_functions_agent, AgentExecutor
-from langchain_community.tools.tavily_search import TavilySearchResults
-from langchain_openai.chat_models import ChatOpenAI
+# import os
+# from dotenv import load_dotenv
+# from typing import Any, AsyncIterator, Dict, Iterator, List, Optional
+# from ai.llm import tools, prompts
+# from langchain import hub
+# from langchain.agents import AgentExecutor, create_react_agent
+# from langchain_openai import OpenAI, ChatOpenAI
+# from langchain_core.prompts import ChatPromptTemplate
+# from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+# from langchain_core.messages import (
+#     AIMessage,
+#     BaseMessage,
+#     FunctionMessage,
+#     HumanMessage,
+#     SystemMessage,
+#     ToolMessage,
+# )
 
-load_dotenv()
+# # This is based on the ReAct pattern. ReAct: Synergizing Reasoning and Acting in Language Models
+# # https://arxiv.org/abs/2210.03629
 
-openai_api_key = os.getenv("OPEN_API_KEY")
-tavily_api_key = os.getenv("TAVILY_API_KEY")
+# load_dotenv()
 
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+# openai_api_key = os.getenv("OPEN_API_KEY")
 
-prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", "You are an assistant called Max"),
-        ("human", "{input}"),
-        MessagesPlaceholder(variable_name="agent_scratchpad"),
-    ]
-)
 
-# Initialize the tool with your API key
-search = TavilySearchResults(tavily_api_key=tavily_api_key)
+# def get_llm_response(user_input: str):
+#     # this could be additional prompts
+#     prompt = prompts.superforecaster()
+#     # this could be additional tools
+#     tools = tools.TavilySearchResults()
+#     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+#     agent = create_react_agent(llm, tools, prompt)
+#     agent_executor = AgentExecutor(agent=agent, tools=tools verbose=True)
+#     result = agent_executor.invoke({"input": {user_input}})
+#     return result
 
-tools = [search]
 
-agent = create_openai_functions_agent(llm=llm, prompt=prompt, tools=tools)
-
-agentExecutor = AgentExecutor(agent=agent, tools=tools)
-
-response = agentExecutor.invoke({"input": "Hello"})
-
-print(response)
+# # TODO: Add outputparser.JSON - send parsed message as JSON

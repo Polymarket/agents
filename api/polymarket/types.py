@@ -3,6 +3,7 @@ from typing import Union
 from typing import Optional
 from pydantic import BaseModel
 
+
 class Trade(BaseModel):
     id: int
     taker_order_id: str
@@ -23,6 +24,7 @@ class Trade(BaseModel):
     maker_orders: list[str]
     type: str
 
+
 class SimpleMarket(BaseModel):
     id: int
     question: str
@@ -41,31 +43,36 @@ class SimpleMarket(BaseModel):
     outcomes: str
     outcome_prices: str
 
+
 class ClobReward(BaseModel):
-    id: str # returned as string in api but really an int?
+    id: str  # returned as string in api but really an int?
     conditionId: str
     assetAddress: str
-    rewardsAmount: float # only seen 0 but could be float?
-    rewardsDailyRate: int # only seen ints but could be float?
-    startDate: str # yyyy-mm-dd formatted date string
-    endDate: str # yyyy-mm-dd formatted date string
+    rewardsAmount: float  # only seen 0 but could be float?
+    rewardsDailyRate: int  # only seen ints but could be float?
+    startDate: str  # yyyy-mm-dd formatted date string
+    endDate: str  # yyyy-mm-dd formatted date string
+
 
 class Tag(BaseModel):
     id: str
     label: Optional[str] = None
     slug: Optional[str] = None
-    forceShow: Optional[bool] = None # missing from current events data
-    createdAt: Optional[str] = None # missing from events data
-    updatedAt: Optional[str] = None # missing from current events data
+    forceShow: Optional[bool] = None  # missing from current events data
+    createdAt: Optional[str] = None  # missing from events data
+    updatedAt: Optional[str] = None  # missing from current events data
     _sync: Optional[bool] = None
 
+
 class PolymarketEvent(BaseModel):
-    id: str # "11421"
+    id: str  # "11421"
     ticker: Optional[str] = None
     slug: Optional[str] = None
     title: Optional[str] = None
     startDate: Optional[str] = None
-    creationDate: Optional[str] = None # fine in market event but missing from events response
+    creationDate: Optional[str] = (
+        None  # fine in market event but missing from events response
+    )
     endDate: Optional[str] = None
     image: Optional[str] = None
     icon: Optional[str] = None
@@ -78,8 +85,8 @@ class PolymarketEvent(BaseModel):
     liquidity: Optional[float] = None
     volume: Optional[float] = None
     reviewStatus: Optional[str] = None
-    createdAt: Optional[str] = None # 2024-07-08T01:06:23.982796Z,
-    updatedAt: Optional[str] = None # 2024-07-15T17:12:48.601056Z,
+    createdAt: Optional[str] = None  # 2024-07-08T01:06:23.982796Z,
+    updatedAt: Optional[str] = None  # 2024-07-15T17:12:48.601056Z,
     competitive: Optional[float] = None
     volume24hr: Optional[float] = None
     enableOrderBook: Optional[bool] = None
@@ -111,7 +118,7 @@ class Market(BaseModel):
     active: Optional[bool] = None
     closed: Optional[bool] = None
     marketMakerAddress: Optional[str] = None
-    createdAt: Optional[str] = None # date type worth enforcing for dates?
+    createdAt: Optional[str] = None  # date type worth enforcing for dates?
     updatedAt: Optional[str] = None
     new: Optional[bool] = None
     featured: Optional[bool] = None
@@ -127,13 +134,13 @@ class Market(BaseModel):
     orderMinSize: Optional[int] = None
     volumeNum: Optional[float] = None
     liquidityNum: Optional[float] = None
-    endDateIso: Optional[str] = None # iso format date = None
+    endDateIso: Optional[str] = None  # iso format date = None
     startDateIso: Optional[str] = None
     hasReviewedDates: Optional[bool] = None
     volume24hr: Optional[float] = None
     clobTokenIds: Optional[list] = None
-    umaBond: Optional[int] = None # returned as string from api?
-    umaReward: Optional[int] = None # returned as string from api?
+    umaBond: Optional[int] = None  # returned as string from api?
+    umaReward: Optional[int] = None  # returned as string from api?
     volume24hrClob: Optional[float] = None
     volumeClob: Optional[float] = None
     liquidityClob: Optional[float] = None
@@ -145,17 +152,20 @@ class Market(BaseModel):
     ready: Optional[bool] = None
     deployed: Optional[bool] = None
     funded: Optional[bool] = None
-    deployedTimestamp: Optional[str] = None # utc z datetime string
-    acceptingOrdersTimestamp: Optional[str] = None # utc z datetime string,
+    deployedTimestamp: Optional[str] = None  # utc z datetime string
+    acceptingOrdersTimestamp: Optional[str] = None  # utc z datetime string,
     cyom: Optional[bool] = None
     competitive: Optional[float] = None
     pagerDutyNotificationEnabled: Optional[bool] = None
-    reviewStatus: Optional[str] = None # deployed, draft, etc.
+    reviewStatus: Optional[str] = None  # deployed, draft, etc.
     approved: Optional[bool] = None
     clobRewards: Optional[list[ClobReward]] = None
-    rewardsMinSize: Optional[int] = None # would make sense to allow float but we'll see
+    rewardsMinSize: Optional[int] = (
+        None  # would make sense to allow float but we'll see
+    )
     rewardsMaxSpread: Optional[float] = None
     spread: Optional[float] = None
+
 
 class ComplexMarket(BaseModel):
     id: int
@@ -182,6 +192,7 @@ class ComplexMarket(BaseModel):
     description: Union[str, None] = None
     price: float
     tax: Union[float, None] = None
+
 
 class SimpleEvent(BaseModel):
     id: int
