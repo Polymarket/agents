@@ -8,5 +8,6 @@ langchain
 langchainhub
 langchain-openai
 langchain-community
+langgraph
 tavily-python
 newsapi-python==0.2.7

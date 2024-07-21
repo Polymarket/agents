@@ -5,7 +5,10 @@ import pdb
 
 from api.polymarket.polymarket import Polymarket
 from ai.llm.prompts import generate_simple_ai_trader
-from ai.llm.simpleagent import get_llm_response
+
+from ai.llm.simpleagent import get_llm_response, get_superforecast
+
+# from ai.llm.langchainagent import get_llm_response
 from data.news_providers.newsapi_caller import NewsApiCaller
 
 app = typer.Typer()
@@ -41,10 +44,28 @@ def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
     pprint(events)
 
 
+# @app.command()
+# def get_market(events: str):
+#     response = gammamarketclient.
+#     print(f"event: str = {event}")
+#     events = polymarket.get_markets()
+
+
+# Generate probability statement with estimate between 0 and 1
 @app.command()
-def estimate_price(market_summary: str, market_id: int):
-    print(f"market_summary: str = {market_summary}, market_id: int = {market_id}")
-    pprint(price)
+def ask_superforecaster(event_title: str, market_question: str, outcome: str):
+    print(
+        f"event: str = {event_title}, question: str = {market_question}, outcome (usually yes or no): str = {outcome}"
+    )
+    response = get_superforecast(
+        event_title=event_title, market_question=market_question, outcome=outcome
+    )
+    print(f"Response:{response}")
+
+
+@app.command()
+def ask_expert(market_question: str) -> str:
+    print(f"We are finding a list of experts for {market_question}")
 
 
 @app.command()

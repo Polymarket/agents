@@ -2,7 +2,15 @@
 from typing import Annotated
 from json import tool
 
-@tool
-def this_tool(
-    
-)
+# from langchain_community.tools.tavily_search import TavilySearchResults
+
+
+# @tool
+# def GetTavilyResults():
+#     tavily_tool = TavilySearchResults()
+#     response = tavily_tool
+#     return response
+
+
+# https://api.python.langchain.com/en/latest/output_parsers/langchain_core.output_parsers.json.JsonOutputParser.html
+# #langchain_core.output_parsers.json.JsonOutputParser
