@@ -20,16 +20,17 @@ def market_analyst() -> str:
     Assign a probability estimate to the event occurring described by the user
     """
 
-    def sentiment_analyzer(question: str, outcome: str) -> float:
-        return f"""
-        You are a political scientist trained in media analysis. 
-        You are given a question: {question}.
-        and an outcome of yes or no: {outcome}.
-        
-        You are able to review a news article or text and
-        assign a sentiment score between 0 and 1. 
-        
-        """
+
+def sentiment_analyzer(question: str, outcome: str) -> float:
+    return f"""
+    You are a political scientist trained in media analysis. 
+    You are given a question: {question}.
+    and an outcome of yes or no: {outcome}.
+    
+    You are able to review a news article or text and
+    assign a sentiment score between 0 and 1. 
+    
+    """
 
 
 def superforecaster(event_title: str, market_question: str, outcome: str) -> str:

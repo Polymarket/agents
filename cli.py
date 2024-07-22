@@ -5,24 +5,9 @@ import pdb
 
 from api.polymarket.polymarket import Polymarket
 from ai.llm import prompt_executor, prompts
-from ai.llm.prompt_executor import (
-    get_llm_response,
-    get_superforecast,
-    get_polymarket_llm,
-)
-from local_rag import load_json_from_local
-from data.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
+from data_sources.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
 from langchain_core.output_parsers import StrOutputParser
-from ai.llm.prompts import Prompts
-
-from ai.llm.prompt_executor import (
-    get_llm_response,
-    get_superforecast,
-    get_polymarket_llm,
-)
-
-# from ai.llm.langchainagent import get_llm_response
-from data.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
+from data_sources.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
 from local_rag import run_query_on_local_data
 
 app = typer.Typer()
@@ -64,13 +49,12 @@ def query_local_rag(query: str):
     pprint(response)
 
 
-# Generate probability statement with estimate between 0 and 1
 @app.command()
 def ask_superforecaster(event_title: str, market_question: str, outcome: str):
     print(
         f"event: str = {event_title}, question: str = {market_question}, outcome (usually yes or no): str = {outcome}"
     )
-    response = get_superforecast(
+    response = prompt_executor.get_superforecast(
         event_title=event_title, market_question=market_question, outcome=outcome
     )
     print(f"Response:{response}")
@@ -106,7 +90,7 @@ def ask_llm(user_input: str):
     """
     Ask a question to the LLM and get a response.
     """
-    response = get_llm_response(user_input)
+    response = prompt_executor.get_llm_response(user_input)
     print(f"LLM Response: {response}")
 
 
@@ -122,7 +106,7 @@ def ask_polymarket_llm(user_input: str):
         | prompt_executor.llm
         | StrOutputParser()
     )
-    response = get_polymarket_llm(user_input=user_input)
+    response = prompt_executor.get_polymarket_llm(user_input=user_input)
     print(f"LLM + current markets&events response: {response}")
 
 
