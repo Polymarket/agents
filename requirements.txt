@@ -11,3 +11,7 @@ langchain-community
 langgraph
 tavily-python
 newsapi-python==0.2.7
+
+# local rag
+jq
+
