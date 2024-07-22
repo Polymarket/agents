@@ -32,6 +32,7 @@ def get_relevant_news(keywords: str):
     articles = newsapi_client.get_articles_for_cli_keywords(keywords)
     pprint(articles)
 
+
 @app.command()
 def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
     print(f"limit: int = {limit}, sort_by: str = {sort_by}")
@@ -94,6 +95,15 @@ def ask_llm(user_input: str):
     """
     response = get_llm_response(user_input)
     print(f"LLM Response: {response}")
+
+
+@app.command()
+def ask_polymarket_llm(user_input: str):
+    """
+    What types of markets do you want trade?
+    """
+    response = get_polymarket_llm(user_input=user_input)
+    print(f"LLM + current markets&events response: {response}")
 
 
 if __name__ == "__main__":
