@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnablePassthrough
-from ai.llm import prompts
+from ai.llm.prompts import prompts
 from api.polymarket.gamma_market_client import GammaMarketClient
 
 load_dotenv()
@@ -19,7 +19,7 @@ llm = ChatOpenAI(
 
 
 def get_llm_response(user_input: str) -> str:
-    system_message = SystemMessage(content=str(prompts.market_analyst))
+    system_message = SystemMessage(content=str(Prompts.market_analyst))
     human_message = HumanMessage(content=user_input)
     messages = [system_message, human_message]
     result = llm.invoke(messages)
@@ -27,7 +27,7 @@ def get_llm_response(user_input: str) -> str:
 
 
 def get_superforecast(event_title: str, market_question: str, outcome: str) -> str:
-    messages = prompts.superforecaster(
+    messages = Prompts.superforecaster(
         event_title=event_title, market_question=market_question, outcome=outcome
     )
     result = llm.invoke(messages)

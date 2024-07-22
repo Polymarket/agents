@@ -9,6 +9,13 @@ from ai.llm.simpleagent import get_llm_response, get_superforecast, get_polymark
 from local_rag import load_json_from_local
 from data.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
 from langchain_core.output_parsers import StrOutputParser
+from ai.llm.prompts import Prompts
+
+from ai.llm.simpleagent import get_llm_response, get_superforecast, get_polymarket_llm
+
+# from ai.llm.langchainagent import get_llm_response
+from data.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
+from local_rag import run_query_on_local_data
 
 app = typer.Typer()
 polymarket = Polymarket()
@@ -42,7 +49,10 @@ def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
     events = events[:limit]
     pprint(events)
 
-
+@app.command()
+def query_local_rag(query: str):
+    response = run_query_on_local_data(query)
+    pprint(response)
 # @app.command()
 # def get_market(events: str):
 #     response = gammamarketclient.
