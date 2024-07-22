@@ -4,14 +4,22 @@ from devtools import pprint
 import pdb
 
 from api.polymarket.polymarket import Polymarket
-from ai.llm import prompts, simpleagent
-from ai.llm.simpleagent import get_llm_response, get_superforecast, get_polymarket_llm
+from ai.llm import prompt_executor, prompts
+from ai.llm.prompt_executor import (
+    get_llm_response,
+    get_superforecast,
+    get_polymarket_llm,
+)
 from local_rag import load_json_from_local
 from data.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
 from langchain_core.output_parsers import StrOutputParser
 from ai.llm.prompts import Prompts
 
-from ai.llm.simpleagent import get_llm_response, get_superforecast, get_polymarket_llm
+from ai.llm.prompt_executor import (
+    get_llm_response,
+    get_superforecast,
+    get_polymarket_llm,
+)
 
 # from ai.llm.langchainagent import get_llm_response
 from data.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
@@ -49,15 +57,11 @@ def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
     events = events[:limit]
     pprint(events)
 
+
 @app.command()
 def query_local_rag(query: str):
     response = run_query_on_local_data(query)
     pprint(response)
-# @app.command()
-# def get_market(events: str):
-#     response = gammamarketclient.
-#     print(f"event: str = {event}")
-#     events = polymarket.get_markets()
 
 
 # Generate probability statement with estimate between 0 and 1
@@ -115,7 +119,7 @@ def ask_polymarket_llm(user_input: str):
     rag_chain = (
         {"context": retriever, "question": user_input}
         | prompts.market_analyst
-        | simpleagent.llm
+        | prompt_executor.llm
         | StrOutputParser()
     )
     response = get_polymarket_llm(user_input=user_input)
