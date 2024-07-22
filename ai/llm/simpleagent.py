@@ -34,10 +34,6 @@ def get_superforecast(event_title: str, market_question: str, outcome: str) -> s
     return result.content
 
 
-# Error message: The error message indicates that some fields in your PolymarketEvent
-# Pydantic model are expected to be lists but are currently being provided as strings.
-# Specifically, the markets.0.outcomePrices
-# and markets.0.clobTokenIds fields (and similar fields in other markets) should be lists, not strings.
 def get_polymarket_llm(user_input: str) -> str:
     client = GammaMarketClient()
     data1 = client.get_current_events()
