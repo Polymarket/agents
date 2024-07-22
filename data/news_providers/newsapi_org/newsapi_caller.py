@@ -4,7 +4,7 @@ import pathlib
 from dotenv import load_dotenv
 from newsapi import NewsApiClient
 
-from data.news_providers.types import Article
+from data.news_providers.newsapi_org.types import Article
 
 load_dotenv()
 

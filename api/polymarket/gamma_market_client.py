@@ -14,7 +14,7 @@ class GammaMarketClient:
         self.gamma_markets_endpoint = self.gamma_url + "/markets"
         self.gamma_events_endpoint = self.gamma_url + "/events"
 
-    def parse_market(self, market_object):
+    def parse_pydantic_market(self, market_object):
         try:
             if "clobRewards" in market_object:
                 clob_rewards: list[ClobReward] = []
@@ -30,13 +30,9 @@ class GammaMarketClient:
 
             # These two fields below are returned as stringified lists from the api
             if "outcomePrices" in market_object:
-                market_object["outcomePrices"] = json.loads(
-                    market_object["outcomePrices"]
-                )
+                market_object["outcomePrices"] = json.loads(market_object["outcomePrices"])
             if "clobTokenIds" in market_object:
-                market_object["clobTokenIds"] = json.loads(
-                    market_object["clobTokenIds"]
-                )
+                market_object["clobTokenIds"] = json.loads(market_object["clobTokenIds"])
 
             return Market(**market_object)
         except Exception as err:
@@ -63,7 +59,7 @@ class GammaMarketClient:
             print(f"[parse_event] Caught exception: {err}")
             print("\n", event_object)
 
-    def parse_event(self, event_object):
+    def parse_pydantic_event(self, event_object):
         try:
             if "tags" in event_object:
                 print("tags here", event_object["tags"])
@@ -75,26 +71,44 @@ class GammaMarketClient:
         except Exception as err:
             print(f"[parse_event] Caught exception: {err}")
 
-    def get_markets(self, querystring_params={"limit": 3}):
+    def get_markets(self, querystring_params={}, parse_pydantic=False, local_file_path=None):
+        if parse_pydantic and local_file_path is not None:
+            raise Exception('Cannot use "parse_pydantic" and "local_file" params simultaneously.')
+        
         response = httpx.get(self.gamma_markets_endpoint, params=querystring_params)
         if response.status_code == 200:
-            markets: list[Market] = []
             data = response.json()
-            for market_object in data:
-                markets.append(self.parse_market(market_object))
-            return market_object
+            if local_file_path is not None:
+                with open(local_file_path, 'w+') as out_file:
+                    json.dump(data, out_file)
+            elif not parse_pydantic:
+                return data
+            else:
+                markets: list[Market] = []
+                for market_object in data:
+                    markets.append(self.parse_pydantic_market(market_object))
+                return markets
         else:
             print(f"Error response returned from api: HTTP {response.status_code}")
             raise Exception()
 
-    def get_events(self, querystring_params={}):
+    def get_events(self, querystring_params={}, parse_pydantic=False, local_file_path=None):
+        if parse_pydantic and local_file_path is not None:
+            raise Exception('Cannot use "parse_pydantic" and "local_file" params simultaneously.')
+        
         response = httpx.get(self.gamma_events_endpoint, params=querystring_params)
         if response.status_code == 200:
-            events: list[PolymarketEvent] = []
             data = response.json()
-            for market_event_obj in data:
-                events.append(self.parse_event(market_event_obj))
-            return events
+            if local_file_path is not None:
+                with open(local_file_path, 'w+') as out_file:
+                    json.dump(data, out_file)
+            elif not parse_pydantic:
+                return data
+            else:
+                events: list[PolymarketEvent] = []
+                for market_event_obj in data:
+                    events.append(self.parse_event(market_event_obj))
+                return events
         else:
             raise Exception()
 
