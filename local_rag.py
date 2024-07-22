@@ -45,5 +45,11 @@ def load_json_from_local(json_file_path):
     response_docs2 = db3.similarity_search_with_score("Which document has the lowest volume?")
     pprint(response_docs2)
 
-truncate_json()
+def run_query(query):
+    embedding_function = OpenAIEmbeddings(model="text-embedding-3-small")
+    local_db = Chroma(persist_directory="./chroma_local_db", embedding_function=embedding_function)
+    response_docs = local_db.similarity_search_with_score("Which document has the lowest volume?")
+    pprint(response_docs)
+
+# truncate_json()
 load_json_from_local('./examples/ten_markets.json')

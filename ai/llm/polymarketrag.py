@@ -4,26 +4,65 @@ import json
 import devtools
 from pathlib import Path
 from pprint import pprint
-from api.polymarket.polymarket import Polymarket
-from api.polymarket.gamma_market_client import GammaMarketClient
 from dotenv import load_dotenv
-from langchain_community.document_loaders import JSONLoader
+import tiktoken
+
+# from api.polymarket.polymarket import Polymarket
+# from api.polymarket.gamma_market_client import GammaMarketClient
+from langchain_openai import OpenAIEmbeddings
+from langchain_chroma import Chroma, vectorstores
+from langchain_openai import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate
+from langchain_community.document_loaders import JSONLoader, WebBaseLoader
+from langchain_text_splitters import (
+    RecursiveJsonSplitter,
+    RecursiveCharacterTextSplitter,
+)
+from langchain.tools.retriever import create_retriever_tool
 
 load_dotenv()
 
-# openai_api_key = os.getenv("OPENAI_API_KEY")
-# llm = ChatOpenAI(model="gpt-4o", temperature=0)
+openai_api_key = os.getenv("OPENAI_API_KEY")
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
-client = GammaMarketClient()
-pprint(client)
-data = client.get_current_markets()
-pprint(data)
+# client = GammaMarketClient()
 
+# JSON preprocesing step
+# data = client.get_markets()
 
-## INDEXING ##
-# numerical representation of
+urls = [
+    "https://learn.polymarket.com/what-is-polymarket"
+    "https://learn.polymarket.com/how-to-deposit"
+    "https://learn.polymarket.com/making-your-first-trade"
+    "https://learn.polymarket.com/using-the-order-book"
+    "https://docs.polymarket.com/#introduction"
+    "https://docs.polymarket.com/#introduction-2"
+    "https://docs.polymarket.com/#system"
+]
 
-# Load data #
+docs = [WebBaseLoader(url).load() for url in urls]
+docs_list = [item for sublist in docs for item in sublist]
+
+text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+    chunk_size=100, chunk_overlap=50
+)
+
+docs_splits = text_splitter.split_documents(docs_list)
+
+vectorstore = Chroma.from_documents(
+    documents=docs_splits,
+    collection_name="rag-polymarket-docs",
+    embedding=OpenAIEmbeddings(model="text-embedding-3-small"),
+)
+
+retriever = vectorstore.as_retriever()
+
+retriever_tool = create_retriever_tool(
+    retriever, "retrieve_blog_posts", "Search and return information about Polymarket"
+)
+
+tools = [retriever_tool]
+pprint(tools)
 
 
 # def fetch_polymarket_data():
