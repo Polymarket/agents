@@ -4,12 +4,11 @@ from devtools import pprint
 import pdb
 
 from api.polymarket.polymarket import Polymarket
-from ai.llm.prompts import generate_simple_ai_trader
-
-from ai.llm.simpleagent import get_llm_response, get_superforecast
-
-# from ai.llm.langchainagent import get_llm_response
-from data.news_providers.newsapi_caller import NewsApiCaller
+from ai.llm import prompts, simpleagent
+from ai.llm.simpleagent import get_llm_response, get_superforecast, get_polymarket_llm
+from local_rag import load_json_from_local
+from data.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
+from langchain_core.output_parsers import StrOutputParser
 
 app = typer.Typer()
 polymarket = Polymarket()
@@ -73,7 +72,7 @@ def evaluate_trade(market_summary: str, relevant_info: str):
     print(
         f"market_summary: str = {market_summary}, relevant_info: str = {relevant_info}"
     )
-    print(f"{generate_simple_ai_trader()}")
+    print(f"{prompts.generate_simple_ai_trader()}")
 
 
 @app.command()
@@ -102,6 +101,13 @@ def ask_polymarket_llm(user_input: str):
     """
     What types of markets do you want trade?
     """
+
+    rag_chain = (
+        {"context": retriever, "question": user_input}
+        | prompts.market_analyst
+        | simpleagent.llm
+        | StrOutputParser()
+    )
     response = get_polymarket_llm(user_input=user_input)
     print(f"LLM + current markets&events response: {response}")
 

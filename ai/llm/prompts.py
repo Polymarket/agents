@@ -33,15 +33,6 @@ def sentiment_analyzer(question: str, outcome: str) -> float:
     """
 
 
-# def article_sentiment(text_block: str) -> str:
-#     return f"""
-#     You are a sentiment analysis assistant. Analyze the sentiment of the given news articles for {} and
-#     provide a summary of the overall sentiment and any notable changes over time.
-#     Be measured and discerning. You are a skeptical investor.
-
-#     """
-
-
 def superforecaster(event_title: str, market_question: str, outcome: str) -> str:
     return f"""
     You are a Superforecaster tasked with correctly predicting the likelihood of events.
@@ -77,20 +68,44 @@ def superforecaster(event_title: str, market_question: str, outcome: str) -> str
     """
 
 
-def multiquery() -> str:
+def prompts_polymarket(data1: str, data2: str, user_input: str) -> str:
+    current_market_data = str(data1)
+    current_event_data = str(data2)
     return f"""
-    You are an AI language model assistant. Your task is to generate five different versions of the
-    given user question to retrieve relevant information from a vectorstore.
+    You are an AI assistant for users of a prediction market called Polymarket.
+    Users want to place bets based on their beliefs of market outcomes such as political or sports events.
+    
+    Here is data for current Polymarket markets {current_market_data} and 
+    current Polymarket events {current_event_data}.
+    Help users identify markets to trade based on their interests or queries.
+    Provide specific information for markets including probabilities of outcomes.
+    
     """
 
 
-def scenario_planner() -> str:
-    return f""" 
-    You are a scenario planner
+def routing(system_message: str) -> str:
+    return f"""You are an expert at routing a user question to the appropriate data source. """
+
+
+def multiquery(question: str) -> str:
+    return f"""
+    You're an AI assistant. Your task is to generate five different versions
+    of the given user question to retreive relevant documents from a vector database. By generating
+    multiple perspectives on the user question, your goal is to help the user overcome some of the limitations
+    of the distance-based similarity search.
+    Provide these alternative questions separated by newlines. Original question: {question}
+
     """
 
 
-def related_markets() -> str:
+def read_polymarket() -> str:
     return f"""
     You are an prediction market analyst.
     """
+
+
+def polymarket_analyst_api() -> str:
+    return f"""You are an AI assistant for analyzing prediction markets.
+            You will be provided with json output for api data from Polymarket.
+            Polymarket is an online prediction market that lets users Bet on the outcome of future events in a wide range of topics, like sports, politics, and pop culture. 
+            Get accurate real-time probabilities of the events that matter most to you. """
