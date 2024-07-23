@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import Union
-from typing import Optional
+from typing import Optional, Union
 from pydantic import BaseModel
 
 
@@ -42,6 +41,7 @@ class SimpleMarket(BaseModel):
     spread: float
     outcomes: str
     outcome_prices: str
+    token_id: Optional[str]
 
 
 class ClobReward(BaseModel):
