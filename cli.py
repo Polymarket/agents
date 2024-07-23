@@ -4,9 +4,11 @@ from devtools import pprint
 import pdb
 
 from api.polymarket.polymarket import Polymarket
-from ai.llm.prompts import generate_simple_ai_trader
-from ai.llm.simpleagent import get_llm_response
-from data.news_providers.newsapi_caller import NewsApiCaller
+from ai.llm import prompt_executor, prompts
+from data_sources.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
+from langchain_core.output_parsers import StrOutputParser
+from data_sources.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
+from local_rag import run_query_on_local_data
 
 app = typer.Typer()
 polymarket = Polymarket()
@@ -51,11 +53,33 @@ def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
 
 
 @app.command()
+def query_local_rag(query: str):
+    response = run_query_on_local_data(query)
+    pprint(response)
+
+
+@app.command()
+def ask_superforecaster(event_title: str, market_question: str, outcome: str):
+    print(
+        f"event: str = {event_title}, question: str = {market_question}, outcome (usually yes or no): str = {outcome}"
+    )
+    response = prompt_executor.get_superforecast(
+        event_title=event_title, market_question=market_question, outcome=outcome
+    )
+    print(f"Response:{response}")
+
+
+@app.command()
+def ask_expert(market_question: str) -> str:
+    print(f"We are finding a list of experts for {market_question}")
+
+
+@app.command()
 def evaluate_trade(market_summary: str, relevant_info: str):
     print(
         f"market_summary: str = {market_summary}, relevant_info: str = {relevant_info}"
     )
-    print(f"{generate_simple_ai_trader()}")
+    print(f"{prompts.generate_simple_ai_trader()}")
 
 
 @app.command()
@@ -75,8 +99,24 @@ def ask_llm(user_input: str):
     """
     Ask a question to the LLM and get a response.
     """
-    response = get_llm_response(user_input)
+    response = prompt_executor.get_llm_response(user_input)
     print(f"LLM Response: {response}")
+
+
+@app.command()
+def ask_polymarket_llm(user_input: str):
+    """
+    What types of markets do you want trade?
+    """
+
+    rag_chain = (
+        {"context": retriever, "question": user_input}
+        | prompts.market_analyst
+        | prompt_executor.llm
+        | StrOutputParser()
+    )
+    response = prompt_executor.get_polymarket_llm(user_input=user_input)
+    print(f"LLM + current markets&events response: {response}")
 
 
 if __name__ == "__main__":
