@@ -32,3 +32,4 @@ archive.zip
 # macOS
 .DS_Store
 
+local_db/

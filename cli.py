@@ -4,15 +4,14 @@ from devtools import pprint
 
 from api.polymarket.polymarket import Polymarket
 from ai.llm import executor, prompts
-from ai.rag.local_rag import run_query_on_local_data
 from data_sources.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
-
+from ai.rag.polymarket_rag import PolymarketRAG
 from langchain_core.output_parsers import StrOutputParser
 
 app = typer.Typer()
 polymarket = Polymarket()
 newsapi_client = NewsApiCaller()
-
+polymarket_rag = PolymarketRAG()
 
 @app.command()
 def get_all_markets(limit: int = 5, sort_by: str = "volume"):
@@ -52,8 +51,12 @@ def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
 
 
 @app.command()
-def query_local_rag(query: str):
-    response = run_query_on_local_data(query)
+def create_local_markets_rag(local_directory: str):
+    polymarket_rag.create_local_markets_rag(local_directory=local_directory)
+
+@app.command()
+def query_local_markets_rag(vector_db_directory: str, query: str):
+    response = polymarket_rag.query_local_markets_rag(local_directory=vector_db_directory, query=query)
     pprint(response)
 
 
