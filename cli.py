@@ -8,12 +8,11 @@ from ai.llm import prompt_executor, prompts
 from data_sources.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
 from langchain_core.output_parsers import StrOutputParser
 from data_sources.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
-from local_rag import run_query_on_local_data
+from ai.rag.local_rag import run_query_on_local_data
 
 app = typer.Typer()
 polymarket = Polymarket()
 newsapi_client = NewsApiCaller()
-
 
 @app.command()
 def get_all_markets(limit: int = 5, sort_by: str = "volume"):

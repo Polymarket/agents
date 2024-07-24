@@ -1,0 +1,58 @@
+import json
+
+# TODO: this could be done using regex for sleeker but less readable code.
+def parse_camel_case(key):
+    output = ''
+    for char in key:
+        if char.isupper():
+            output += ' '
+            output += char.lower()
+        else:
+            output += char
+    return output
+
+# Experimenting with converting json fields into natural language to improve retrieval from text embed mode
+def preprocess_market_object(market_object):
+    description = market_object['description']
+
+    for k, v in market_object.items():
+        if k == 'description':
+            continue
+        if isinstance(v, bool):
+            description += f' This market is{" not" if not v else ""} {parse_camel_case(k)}.'
+        
+        if k in ['volume', 'liquidity']:
+            description += f" This market has a current {k} of {v}."
+    print('\n\ndescription:', description)
+
+    market_object['description'] = description
+
+    return market_object
+
+def preprocess_local_json(file_path, preprocessor_function):
+    with open(file_path, 'r+') as open_file:
+        data = json.load(open_file)
+    
+    output = []
+    for obj in data:
+        preprocessed_json = preprocessor_function(obj)
+        output.append(preprocessed_json)
+    
+    split_path = file_path.split('.')
+    new_file_path = split_path[0] + "_preprocessed." + split_path[1]
+    with open(new_file_path, 'w+') as output_file:
+        json.dump(output, output_file)
+
+# Options for improving search:
+# 1. Translate JSON params into natural language
+# 2. Metadata function with post-filtering on metadata kv pairs
+def metadata_func(record: dict, metadata: dict) -> dict:
+    print('record:', record)
+    print('meta:', metadata)
+    for k, v in record.items():
+        metadata[k] = v
+    
+    del metadata['description']
+    del metadata['events']
+
+    return metadata
