@@ -11,12 +11,13 @@ load_dotenv()
 
 class NewsApiCaller:
     def __init__(self) -> None:
-        path = pathlib.Path(__file__).parent.resolve()
-        with open(f"{path}/configs.json", "r+") as config_file:
-            config_json = json.load(config_file)
-            self.configs = config_json["news_api"]
+        self.configs = {
+            "language": "en",
+            "country": "us",
+            "top_headlines": "https://newsapi.org/v2/top-headlines?country=us&apiKey=",
+            "base_url": "https://newsapi.org/v2/"
+        }
 
-        self.API = NewsApiClient(os.getenv("NEWSAPI_API_KEY"))
         self.categories = {
             "business",
             "entertainment",
@@ -27,26 +28,19 @@ class NewsApiCaller:
             "technology",
         }
 
+        self.API = NewsApiClient(os.getenv("NEWSAPI_API_KEY"))
+
     def get_articles_for_cli_keywords(self, keywords):
-        print("keywords:", keywords)
         query_words = keywords.split(",")
-        print("query_words:", query_words)
         all_articles = self.get_articles_for_options(query_words)
-
         article_objects: list[Article] = []
-
-        for keyword, articles in all_articles.items():
+        for _, articles in all_articles.items():
             for article in articles:
                 article_objects.append(Article(**article))
-
         return article_objects
 
-    def get_top_articles_for_event(self, event_object):
-        pass
-
     def get_top_articles_for_market(self, market_object):
-        news_category = self.get_category(market_object)
-        self.API.get_top_headlines(language="en", country="usa", q=None)
+        return self.API.get_top_headlines(language="en", country="usa", q=None)
 
     def get_articles_for_options(self, market_options, date_start=None, date_end=None):
         all_articles = {}
@@ -79,9 +73,4 @@ class NewsApiCaller:
         market_category = market_object["category"]
         if market_category in self.categories:
             news_category = market_category
-        else:
-            # TODO: Send query to OpenAI that says "here is the list of possible categories"
-            # TODO: Send follow-up request to OpenAI asking "which of those categories does 'Russia & Ukraine' or 'NBA Playoffs' relate to?"
-            pass
-
         return news_category
