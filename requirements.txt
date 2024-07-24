@@ -17,7 +17,6 @@ newsapi-python==0.2.7
 jq
 langchain-chroma
 
-# Dockerization fail points:
 # dependencies of py-clob-client
 eip712-structs
 web3
