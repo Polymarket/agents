@@ -1,14 +1,15 @@
 import os
-import sys
-from pathlib import Path
+
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
-from langchain_core.runnables import RunnablePassthrough
+
 from ai.llm import prompts
 from api.polymarket.gamma_market_client import GammaMarketClient
 
 load_dotenv()
+
+# TODO: add modular objects
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
@@ -16,7 +17,6 @@ llm = ChatOpenAI(
     model="gpt-3.5-turbo",
     temperature=0,
 )
-
 
 def get_llm_response(user_input: str) -> str:
     system_message = SystemMessage(content=str(prompts.market_analyst))

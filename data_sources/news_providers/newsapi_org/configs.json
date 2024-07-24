@@ -1,8 +1,0 @@
-{
-    "news_api": {
-        "language": "en",
-        "country": "us",
-        "top_headlines": "https://newsapi.org/v2/top-headlines?country=us&apiKey=",
-        "base_url": "https://newsapi.org/v2/"
-    }
-}

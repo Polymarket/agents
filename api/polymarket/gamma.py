@@ -1,7 +1,6 @@
 import sys
 import httpx
 import json
-from devtools import pprint
 
 from api.polymarket.types import PolymarketEvent
 from api.polymarket.types import Market
@@ -38,10 +37,6 @@ class GammaMarketClient:
         except Exception as err:
             print(f"[parse_market] Caught exception: {err}")
             print("exception while handling object:", market_object)
-
-    # Market parser for markets nested under an events api response
-    def parse_nested_market(self, market_object):
-        pass
 
     # Event parser for events nested under a markets api response
     def parse_nested_event(self, event_object):

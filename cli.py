@@ -1,14 +1,12 @@
 import typer
+import pdb
 from devtools import pprint
 
-import pdb
-
-from langchain_core.output_parsers import StrOutputParser
 from api.polymarket.polymarket import Polymarket
-from ai.llm import prompt_executor, prompts
+from ai.llm import executor, prompts
 from data_sources.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
-
 from ai.rag.polymarket_rag import PolymarketRAG
+from langchain_core.output_parsers import StrOutputParser
 
 app = typer.Typer()
 polymarket = Polymarket()
@@ -114,12 +112,12 @@ def ask_polymarket_llm(user_input: str):
     """
 
     rag_chain = (
-        {"context": retriever, "question": user_input}
+        {"context": "retriever", "question": user_input}
         | prompts.market_analyst
-        | prompt_executor.llm
+        | executor.llm
         | StrOutputParser()
     )
-    response = prompt_executor.get_polymarket_llm(user_input=user_input)
+    response = executor.get_polymarket_llm(user_input=user_input)
     print(f"LLM + current markets&events response: {response}")
 
 
