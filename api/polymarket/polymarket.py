@@ -108,7 +108,7 @@ class Polymarket:
         self.chain_id = 137 # POLYGON
         self.private_key = os.getenv("POLYGON_WALLET_PRIVATE_KEY")
         
-        self._init_api_keys()
+        # self._init_api_keys()
 
     def _init_api_keys(self):
         self.client = ClobClient(self.clob_url, key=self.private_key, chain_id=self.chain_id)
