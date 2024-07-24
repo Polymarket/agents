@@ -128,6 +128,26 @@ class GammaMarketClient:
             }
         )
 
+    def get_all_current_markets(self, limit=100):
+        offset = 0
+        all_markets = []
+        while True:
+            params = {
+                'active': True,
+                'closed': False,
+                'archived': False,
+                'limit': limit,
+                'offset': offset
+            }
+            market_batch = self.get_markets(querystring_params=params)
+            all_markets.extend(market_batch)
+
+            if len(market_batch) < limit:
+                break
+            offset += limit
+        
+        return all_markets
+
     def get_current_events(self, limit=4):
         return self.get_events(
             querystring_params={
