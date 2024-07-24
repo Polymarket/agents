@@ -98,7 +98,6 @@ def main():
 class Polymarket:
 
     def __init__(self):
-        print("\n\n\nENVIRON:", os.environ)
         self.gamma_url = "https://gamma-api.polymarket.com"
         self.gamma_markets_endpoint = self.gamma_url + "/markets"
         self.gamma_events_endpoint = self.gamma_url + "/events"
