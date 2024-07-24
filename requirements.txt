@@ -15,4 +15,9 @@ newsapi-python==0.2.7
 
 # local rag
 jq
+langchain-chroma
+
+# dependencies of py-clob-client
+eip712-structs
+web3
 
