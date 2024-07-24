@@ -3,15 +3,22 @@
 
 import os
 import pdb
+import time
+import ast
+
+from dotenv import load_dotenv
 from pprint import pprint
+from web3 import Web3
 
 import httpx
 from py_clob_client.client import ClobClient
 from py_clob_client.clob_types import ApiCreds
-from dotenv import load_dotenv
-from py_clob_client.constants import AMOY
+from py_clob_client.constants import AMOY, POLYGON
 from py_order_utils.builders import OrderBuilder
+from py_order_utils.model import OrderData
 from py_order_utils.signer import Signer
+from py_clob_client.clob_types import OrderArgs
+from py_clob_client.order_builder.constants import BUY
 
 from api.polymarket.types import SimpleMarket
 from api.polymarket.types import SimpleEvent
@@ -25,7 +32,7 @@ def auth():
 
 def test():
     host = "https://clob.polymarket.com"
-    key = os.getenv("PK")
+    key = os.getenv("POLYGON_WALLET_PRIVATE_KEY")
     print(key)
     chain_id = POLYGON
 
@@ -107,6 +114,11 @@ class Polymarket:
 
         self.chain_id = 137 # POLYGON
         self.private_key = os.getenv("POLYGON_WALLET_PRIVATE_KEY")
+        self.polygon_rpc = "https://polygon-rpc.com"
+        self.w3 = Web3(Web3.HTTPProvider(self.polygon_rpc))
+
+        self.exchange_address = "0x4bfb41d5b3570defd03c39a9a4d8de6bd8b8982e"
+        self.neg_risk_exchange_address = "0xC5d563A36AE78145C45a50134d48A1215220f80a"
         
         self._init_api_keys()
 
@@ -114,12 +126,12 @@ class Polymarket:
         self.client = ClobClient(self.clob_url, key=self.private_key, chain_id=self.chain_id)
         self.credentials = self.client.create_or_derive_api_creds()
         self.client.set_api_creds(self.credentials)
-        # print(self.credentials)
+        print(self.credentials)
 
     def get_api_key(self):
         return self.client.create_or_derive_api_creds()
 
-    def get_all_markets(self) -> list[SimpleMarket]:
+    def get_all_markets(self) -> "list[SimpleMarket]":
         markets = []
         res = httpx.get(self.gamma_markets_endpoint)
         if res.status_code == 200:
@@ -131,7 +143,7 @@ class Polymarket:
                     pass
         return markets
 
-    def filter_markets_for_trading(self, markets: list[SimpleMarket]):
+    def filter_markets_for_trading(self, markets: "list[SimpleMarket]"):
         tradeable_markets = []
         for market in markets:
             if market.active and market.deployed:
@@ -168,7 +180,7 @@ class Polymarket:
             market["token_id"] = token_id
         return market
 
-    def get_all_events(self) -> list[SimpleEvent]:
+    def get_all_events(self) -> "list[SimpleEvent]":
         events = []
         res = httpx.get(self.gamma_events_endpoint)
         if res.status_code == 200:
@@ -200,7 +212,7 @@ class Polymarket:
             "markets": ','.join([x['id'] for x in event['markets']]),
         }
 
-    def filter_events_for_trading(self, events: list[SimpleEvent]):
+    def filter_events_for_trading(self, events: "list[SimpleEvent]"):
         tradeable_events = []
         for event in events:
             if event.active and not event.restricted:
@@ -222,31 +234,64 @@ class Polymarket:
     def get_orderbook_price(self, token_id: str):
         return self.client.get_price(token_id)
 
-    def build_order(self):
-        exchange_address = "0x...."
-        chain_id = 80002
-        signer = Signer("0x....")
-        builder = OrderBuilder(exchange_address, chain_id, signer)
+    def get_address_for_private_key(self):
+        account = self.w3.eth.account.from_key(str(self.private_key))
+        return account.address
 
-        # Create and sign the order
-        # order = builder.build_signed_order(
-        #     OrderData(
-        #         ...
-        #     )
-        # )
+    def build_order(self,
+        market_token: str,
+        amount: float,
+        nonce: str = str(round(time.time())), # for cancellations
+        side: str = "BUY",
+        expiration: str = "0", # timestamp after which order expires
+    ):
+        signer = Signer(self.private_key)
+        builder = OrderBuilder(
+            self.exchange_address, 
+            self.chain_id,
+            signer
+        )
 
-        # Generate the Order and Signature json to be sent to the CLOB API
-        # pprint(json.dumps(order.dict()))
+        buy = side == "BUY"
+        side = 0 if buy else 1
+        maker_amount = amount if buy else 0
+        taker_amount = amount if not buy else 0
+        order_data = OrderData(
+            maker=self.get_address_for_private_key(),
+            tokenId=market_token,
+            makerAmount=maker_amount,
+            takerAmount=taker_amount,
+            feeRateBps="1",
+            nonce=nonce,
+            side=side,
+            expiration=expiration
+        )
+        order = builder.build_signed_order(order_data)
+        return order
+
+    def execute_order(self, price, size, side, token_id):
+        return self.client.create_and_post_order(OrderArgs(
+            price=price,
+            size=size,
+            side=side,
+            token_id=token_id
+        ))
 
 if __name__ == "__main__":
+
+    load_dotenv()
+
     p = Polymarket()
-    k = p.get_api_key()
-    m = p.get_sampling_simplified_markets()
+
+    # k = p.get_api_key()
+    # m = p.get_sampling_simplified_markets()
+
     # print(m)
     # m = p.get_market('11015470973684177829729219287262166995141465048508201953575582100565462316088')
-    t = m[0]['token_id']
-    o = p.get_orderbook(t)
-    pdb.set_trace()
+
+    # t = m[0]['token_id']
+    # o = p.get_orderbook(t)
+    # pdb.set_trace()
 
     """
     
@@ -259,3 +304,19 @@ if __name__ == "__main__":
             )
     
     """
+
+    # https://polygon-rpc.com
+
+    test_market_token_id = '101669189743438912873361127612589311253202068943959811456820079057046819967115'
+    test_market_data = p.get_market(test_market_token_id)
+
+    test_size = 0.0001
+    test_side = BUY
+    test_price = float(ast.literal_eval(test_market_data['outcome_prices'])[0])
+
+    order = p.execute_order(
+        test_price,
+        test_size,
+        test_side,
+        test_market_token_id,
+    )
