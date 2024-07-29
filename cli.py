@@ -4,8 +4,10 @@ from devtools import pprint
 
 from api.polymarket.polymarket import Polymarket
 from ai.llm import executor, prompts
-from data_sources.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
 from ai.rag.polymarket_rag import PolymarketRAG
+from data.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
+from jobs.scheduler import TradingAgent
+
 from langchain_core.output_parsers import StrOutputParser
 
 app = typer.Typer()
@@ -65,7 +67,7 @@ def ask_superforecaster(event_title: str, market_question: str, outcome: str):
     print(
         f"event: str = {event_title}, question: str = {market_question}, outcome (usually yes or no): str = {outcome}"
     )
-    response = prompt_executor.get_superforecast(
+    response = executor.get_superforecast(
         event_title=event_title, market_question=market_question, outcome=outcome
     )
     print(f"Response:{response}")
@@ -101,7 +103,7 @@ def ask_llm(user_input: str):
     """
     Ask a question to the LLM and get a response.
     """
-    response = prompt_executor.get_llm_response(user_input)
+    response = executor.get_llm_response(user_input)
     print(f"LLM Response: {response}")
 
 
@@ -110,16 +112,16 @@ def ask_polymarket_llm(user_input: str):
     """
     What types of markets do you want trade?
     """
-
-    rag_chain = (
-        {"context": "retriever", "question": user_input}
-        | prompts.market_analyst
-        | executor.llm
-        | StrOutputParser()
-    )
     response = executor.get_polymarket_llm(user_input=user_input)
     print(f"LLM + current markets&events response: {response}")
 
+@app.command()
+def run_autonomous_trader(user_input: str):
+    """
+    Let an autonomous system trade for you.
+    """
+    trader = TradingAgent()
+    trader.start()
 
 if __name__ == "__main__":
     app()
