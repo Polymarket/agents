@@ -5,7 +5,7 @@ from devtools import pprint
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.document_loaders import JSONLoader
-from api.polymarket.gamma_market_client import GammaMarketClient
+from api.polymarket.gamma import GammaMarketClient
 
 class PolymarketRAG:
     def __init__(self, local_db_directory=None, embedding_function=None) -> None:

@@ -5,7 +5,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 
 from ai.llm import prompts
-from api.polymarket.gamma_market_client import GammaMarketClient
+from api.polymarket.gamma import GammaMarketClient
 
 load_dotenv()
 
