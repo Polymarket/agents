@@ -1,6 +1,5 @@
 .venv
 .env
-
 .idea
 .ipynb_checkpoints
 .mypy_cache
@@ -23,13 +22,8 @@ site_build
 venv
 docs.zip
 archive.zip
-
-# vim temporary files
 *~
 .*.sw?
 .cache
-
-# macOS
 .DS_Store
-
 local_db/
