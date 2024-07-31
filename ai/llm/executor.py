@@ -61,3 +61,6 @@ class Executor:
 
     def format_trade_prompt_for_execution(self):
         pass
+
+    def source_best_market_to_create(self):
+        pass

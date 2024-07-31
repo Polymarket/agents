@@ -3,16 +3,16 @@ from polymarket.agents.api.polymarket import Polymarket
 from polymarket.agents.data.newspaper import Newspaper
 
 
-class Trader:
+class Creator:
     def __init__(self):
         self.polymarket = Polymarket()
         self.newspaper = Newspaper()
         self.agent = Agent()
 
-    def one_best_trade(self):
+    def one_best_market(self):
         """
 
-        one_best_trade is a strategy that evaluates all events, markets, and orderbooks
+        one_best_market is a strategy that evaluates all events, markets, and orderbooks
 
         leverages all available information sources accessible to the autonomous agent
 
@@ -25,14 +25,7 @@ class Trader:
         markets = self.agent.filter_markets()
         orderbooks = [self.polymarket.get_orderbooks(m) for m in markets]
         orderbooks = self.agent.filter_orderbooks()
-        best_trade = self.agent.source_best_trade(
+        return self.agent.source_best_market_to_create(
             events, markets, orderbooks, self.newspaper
         )
-        formatted_best_trade = self.agent.format_trade_prompt_for_execution(best_trade)
-        return self.polymarket.execute_order(**formatted_best_trade)
-
-    def maintain_positions(self):
-        pass
-
-    def incentive_farm(self):
-        pass
+        # TODO: format response into json api
