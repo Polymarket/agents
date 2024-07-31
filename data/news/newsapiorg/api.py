@@ -1,15 +1,11 @@
-import json
 import os
-import pathlib
-from dotenv import load_dotenv
+
 from newsapi import NewsApiClient
 
-from data_sources.news_providers.newsapi_org.types import Article
-
-load_dotenv()
+from data.news.types import Article
 
 
-class NewsApiCaller:
+class API:
     def __init__(self) -> None:
         self.configs = {
             "language": "en",

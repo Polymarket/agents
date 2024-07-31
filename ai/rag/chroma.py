@@ -1,11 +1,11 @@
 import json
 import os
 import time
-from devtools import pprint
+
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.document_loaders import JSONLoader
-from api.polymarket.gamma import GammaMarketClient
+from api.gamma import GammaMarketClient
 
 
 class PolymarketRAG:
@@ -51,10 +51,3 @@ class PolymarketRAG:
         )
         response_docs = local_db.similarity_search_with_score(query=query)
         return response_docs
-
-
-# TODO:
-# 1. Pull available markets
-# 2. Prompt to find a market to trade on
-# 3. Prompt to find which side of the market to place a bet on
-# 4. Execute the trade on that market

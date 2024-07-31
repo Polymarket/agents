@@ -1,7 +1,6 @@
 import json
 
 
-# TODO: this could be done using regex for sleeker but less readable code.
 def parse_camel_case(key):
     output = ""
     for char in key:
@@ -13,7 +12,6 @@ def parse_camel_case(key):
     return output
 
 
-# Experimenting with converting json fields into natural language to improve retrieval from text embed mode
 def preprocess_market_object(market_object):
     description = market_object["description"]
 
@@ -49,9 +47,6 @@ def preprocess_local_json(file_path, preprocessor_function):
         json.dump(output, output_file)
 
 
-# Options for improving search:
-# 1. Translate JSON params into natural language
-# 2. Metadata function with post-filtering on metadata kv pairs
 def metadata_func(record: dict, metadata: dict) -> dict:
     print("record:", record)
     print("meta:", metadata)

@@ -4,7 +4,7 @@ from devtools import pprint
 from api.polymarket import Polymarket
 from ai.llm import executor, prompts
 from ai.rag.chroma import PolymarketRAG
-from data.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
+from data.news.newsapiorg.api import API as NewsApiCaller
 from jobs.scheduler import TradingAgent
 
 app = typer.Typer()

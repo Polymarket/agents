@@ -5,7 +5,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 
 from ai.llm import prompts
-from api.polymarket.gamma import GammaMarketClient
+from api.gamma import GammaMarketClient
 from polymarket.agents.ai.llm.prompts import Prompter
 
 
@@ -18,6 +18,7 @@ class Executor:
             model="gpt-3.5-turbo",
             temperature=0,
         )
+        self.client = GammaMarketClient()
 
     def get_llm_response(self, user_input: str) -> str:
         system_message = SystemMessage(content=str(prompts.market_analyst))
@@ -36,15 +37,14 @@ class Executor:
         return result.content
 
     def get_polymarket_llm(self, user_input: str) -> str:
-        client = GammaMarketClient()
-        data1 = client.get_current_events()
-        data2 = client.get_current_markets()
+        data1 = self.client.get_current_events()
+        data2 = self.client.get_current_markets()
         system_message = SystemMessage(
             content=str(prompts.prompts_polymarket(data1=data1, data2=data2))
         )
         human_message = HumanMessage(content=user_input)
         messages = [system_message, human_message]
-        result = llm.invoke(messages)
+        result = self.llm.invoke(messages)
         return result.content
 
     def filter_events(self):
