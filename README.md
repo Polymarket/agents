@@ -17,6 +17,8 @@ Trade autonomously on Polymarket using AI Agents.
 - applies custom prompts in `ai/llm/prompts.py`
 - automatically executes trades from your wallet
 
+`lib/create.py` contains similar logic for creating markets.
+
 ## Customization
 
 This tool is meant to be modular and extensible.
