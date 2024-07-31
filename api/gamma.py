@@ -1,11 +1,10 @@
-import sys
 import httpx
 import json
 
-from api.polymarket.types import PolymarketEvent
-from api.polymarket.types import Market
-from api.polymarket.types import ClobReward
-from api.polymarket.types import Tag
+from api.types import PolymarketEvent
+from api.types import Market
+from api.types import ClobReward
+from api.types import Tag
 
 
 class GammaMarketClient:

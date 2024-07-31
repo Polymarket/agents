@@ -1,14 +1,11 @@
 import typer
-import pdb
 from devtools import pprint
 
-from api.polymarket.polymarket import Polymarket
+from api.polymarket import Polymarket
 from ai.llm import executor, prompts
-from ai.rag.polymarket_rag import PolymarketRAG
+from ai.rag.chroma import PolymarketRAG
 from data.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
 from jobs.scheduler import TradingAgent
-
-from langchain_core.output_parsers import StrOutputParser
 
 app = typer.Typer()
 polymarket = Polymarket()
