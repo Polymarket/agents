@@ -8,8 +8,8 @@ from ai.llm import prompts
 from api.polymarket.gamma import GammaMarketClient
 from polymarket.agents.ai.llm.prompts import Prompter
 
-class Executor:
 
+class Executor:
     def __init__(self):
         load_dotenv()
         self.prompter = Prompter()
@@ -26,14 +26,14 @@ class Executor:
         result = self.llm.invoke(messages)
         return result.content
 
-
-    def get_superforecast(self, event_title: str, market_question: str, outcome: str) -> str:
+    def get_superforecast(
+        self, event_title: str, market_question: str, outcome: str
+    ) -> str:
         messages = prompts.superforecaster(
             event_title=event_title, market_question=market_question, outcome=outcome
         )
         result = self.llm.invoke(messages)
         return result.content
-
 
     def get_polymarket_llm(self, user_input: str) -> str:
         client = GammaMarketClient()

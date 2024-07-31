@@ -1,5 +1,4 @@
 class Prompter:
-
     def generate_simple_ai_trader(market_description: str, relevant_info: str) -> str:
         return f"""
             
@@ -12,13 +11,11 @@ class Prompter:
         Do you buy or sell? How much?
         """
 
-
     def market_analyst(self) -> str:
         return f"""
         You are a market analyst that takes a description of an event and produces a market forecast. 
         Assign a probability estimate to the event occurring described by the user
         """
-
 
     def sentiment_analyzer(question: str, outcome: str) -> float:
         return f"""
@@ -30,7 +27,6 @@ class Prompter:
         assign a sentiment score between 0 and 1. 
         
         """
-
 
     def superforecaster(event_title: str, market_question: str, outcome: str) -> str:
         return f"""
@@ -66,8 +62,9 @@ class Prompter:
         I believe {market_question} has a likelihood {float} for outcome of {outcome}.
         """
 
-
-    def prompts_polymarket(data1: str, data2: str, market_question: str, outcome: str) -> str:
+    def prompts_polymarket(
+        data1: str, data2: str, market_question: str, outcome: str
+    ) -> str:
         current_market_data = str(data1)
         current_event_data = str(data2)
         return f"""
@@ -84,7 +81,6 @@ class Prompter:
         I believe {market_question} has a likelihood {float} for outcome of {outcome}.
         """
 
-
     def prompts_polymarket(data1: str, data2: str, user_input: str) -> str:
         current_market_data = str(data1)
         current_event_data = str(data2)
@@ -99,10 +95,8 @@ class Prompter:
 
         """
 
-
     def routing(system_message: str) -> str:
         return f"""You are an expert at routing a user question to the appropriate data source. """
-
 
     def multiquery(question: str) -> str:
         return f"""
@@ -114,12 +108,10 @@ class Prompter:
 
         """
 
-
     def read_polymarket(self) -> str:
         return f"""
         You are an prediction market analyst.
         """
-
 
     def polymarket_analyst_api(self) -> str:
         return f"""You are an AI assistant for analyzing prediction markets.
@@ -128,8 +120,11 @@ class Prompter:
                 Get accurate real-time probabilities of the events that matter most to you. """
 
     def filter_events(self) -> str:
-        return self.polymarket_analyst_api(self) + """
+        return (
+            self.polymarket_analyst_api(self)
+            + """
         
         Filter events for the ones you will be best at trading on profitably.
 
         """
+        )

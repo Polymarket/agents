@@ -15,6 +15,7 @@ polymarket = Polymarket()
 newsapi_client = NewsApiCaller()
 polymarket_rag = PolymarketRAG()
 
+
 @app.command()
 def get_all_markets(limit: int = 5, sort_by: str = "volume"):
     """
@@ -56,9 +57,12 @@ def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
 def create_local_markets_rag(local_directory: str):
     polymarket_rag.create_local_markets_rag(local_directory=local_directory)
 
+
 @app.command()
 def query_local_markets_rag(vector_db_directory: str, query: str):
-    response = polymarket_rag.query_local_markets_rag(local_directory=vector_db_directory, query=query)
+    response = polymarket_rag.query_local_markets_rag(
+        local_directory=vector_db_directory, query=query
+    )
     pprint(response)
 
 
@@ -115,6 +119,7 @@ def ask_polymarket_llm(user_input: str):
     response = executor.get_polymarket_llm(user_input=user_input)
     print(f"LLM + current markets&events response: {response}")
 
+
 @app.command()
 def run_autonomous_trader(user_input: str):
     """
@@ -122,6 +127,7 @@ def run_autonomous_trader(user_input: str):
     """
     trader = TradingAgent()
     trader.start()
+
 
 if __name__ == "__main__":
     app()

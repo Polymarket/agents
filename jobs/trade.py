@@ -2,8 +2,8 @@ from polymarket.agents.ai.llm.executor import Executor as Agent
 from polymarket.agents.api.polymarket.polymarket import Polymarket
 from polymarket.agents.data.newspaper import Newspaper
 
-class Trader:
 
+class Trader:
     def __init__(self):
         self.polymarket = Polymarket()
         self.newspaper = Newspaper()
@@ -11,13 +11,13 @@ class Trader:
 
     def one_best_trade(self):
         """
-        
+
         one_best_trade is a strategy evaluates all events, markets, and orderbooks
 
-        leverages all available information sources accessible to the autonomous agent 
+        leverages all available information sources accessible to the autonomous agent
 
         then executes that trade without any human intervention
-        
+
         """
         events = self.polymarket.get_all_events()
         events = self.agent.filter_events()

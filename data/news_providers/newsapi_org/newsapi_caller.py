@@ -8,13 +8,14 @@ from data_sources.news_providers.newsapi_org.types import Article
 
 load_dotenv()
 
+
 class NewsApiCaller:
     def __init__(self) -> None:
         self.configs = {
             "language": "en",
             "country": "us",
             "top_headlines": "https://newsapi.org/v2/top-headlines?country=us&apiKey=",
-            "base_url": "https://newsapi.org/v2/"
+            "base_url": "https://newsapi.org/v2/",
         }
 
         self.categories = {

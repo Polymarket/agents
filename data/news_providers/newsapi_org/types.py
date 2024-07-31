@@ -1,9 +1,11 @@
 from typing import Optional
 from pydantic import BaseModel
 
+
 class Source(BaseModel):
     id: Optional[str]
     name: Optional[str]
+
 
 class Article(BaseModel):
     source: Optional[Source]

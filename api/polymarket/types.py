@@ -100,6 +100,7 @@ class PolymarketEvent(BaseModel):
     showAllOutcomes: Optional[bool] = None
     showMarketImages: Optional[bool] = None
 
+
 class Market(BaseModel):
     id: int
     question: Optional[str] = None
@@ -160,7 +161,9 @@ class Market(BaseModel):
     reviewStatus: Optional[str] = None  # deployed, draft, etc.
     approved: Optional[bool] = None
     clobRewards: Optional[list[ClobReward]] = None
-    rewardsMinSize: Optional[int] = None  # would make sense to allow float but we'll see
+    rewardsMinSize: Optional[int] = (
+        None  # would make sense to allow float but we'll see
+    )
     rewardsMaxSpread: Optional[float] = None
     spread: Optional[float] = None
 
