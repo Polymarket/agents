@@ -1,6 +1,6 @@
 import datetime as dt
 import time
-from polymarket.agents.jobs.trade import Trader
+from polymarket.agents.lib.trade import Trader
 
 from polymarket.agents.lib.history import record_history
 from polymarket.agents.lib.refresh import refresh_trades
