@@ -22,8 +22,8 @@ from py_order_utils.signer import Signer
 from py_clob_client.clob_types import OrderArgs
 from py_clob_client.order_builder.constants import BUY
 
-from api.polymarket.types import SimpleMarket
-from api.polymarket.types import SimpleEvent
+from api.types import SimpleMarket
+from api.types import SimpleEvent
 
 load_dotenv()
 
@@ -45,8 +45,8 @@ class Polymarket:
         self.exchange_address = "0x4bfb41d5b3570defd03c39a9a4d8de6bd8b8982e"
         self.neg_risk_exchange_address = "0xC5d563A36AE78145C45a50134d48A1215220f80a"
 
-        self._init_api_keys()
-        self._init_approvals(True)
+        # self._init_api_keys()
+        # self._init_approvals(True)
 
     def _init_api_keys(self):
         self.client = ClobClient(

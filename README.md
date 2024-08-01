@@ -48,3 +48,15 @@ Run the following commands from the agents directory to run an ephemeral docker 
 ./scripts/bash/build-docker.sh
 ./scripts/bash/run-docker-dev.sh
 ```
+
+# Future
+
+This repo is intended to be an experimental developer toolkit. In order to productionize the system with capital, we recommend the following major projects begin to be developed:
+
+[ ] Backtesting
+[ ] Papertrading
+
+Other major development endeavors that would support the current state of the system include:
+
+[ ] External embeddings
+[ ] More news api sources

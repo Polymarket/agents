@@ -1,6 +1,6 @@
-from polymarket.agents.ai.llm.executor import Executor as Agent
-from polymarket.agents.api.polymarket import Polymarket
-from polymarket.agents.data.newspaper import Newspaper
+from ai.llm.executor import Executor as Agent
+from api.polymarket import Polymarket
+from data.newspaper import Newspaper
 
 
 class Creator:

@@ -8,14 +8,14 @@ from langchain_community.document_loaders import JSONLoader
 from api.gamma import GammaMarketClient
 
 
-class PolymarketRAG:
+class Chroma:
     def __init__(self, local_db_directory=None, embedding_function=None) -> None:
         self.gamma_client = GammaMarketClient()
         self.local_db_directory = local_db_directory
         self.embedding_function = embedding_function
 
     def load_json_from_local(
-        self, json_file_path=None, vector_db_directory="./local_db"
+        self, json_file_path=None, vector_db_directory="./localDb"
     ):
         loader = JSONLoader(
             file_path=json_file_path, jq_schema=".[].description", text_content=False
@@ -29,7 +29,7 @@ class PolymarketRAG:
 
         return db2
 
-    def create_local_markets_rag(self, local_directory="./local_db"):
+    def create_local_markets_rag(self, local_directory="./localDb"):
         all_markets = self.gamma_client.get_all_current_markets()
 
         if not os.path.isdir(local_directory):
@@ -44,7 +44,7 @@ class PolymarketRAG:
             json_file_path=local_file_path, vector_db_directory=local_directory
         )
 
-    def query_local_markets_rag(self, local_directory=None, query=None):
+    def query_local_markets_rag(self, query=None, local_directory="./local_db"):
         embedding_function = OpenAIEmbeddings(model="text-embedding-3-small")
         local_db = Chroma(
             persist_directory=local_directory, embedding_function=embedding_function

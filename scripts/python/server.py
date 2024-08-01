@@ -1,3 +1,13 @@
+"""
+
+We envision decentralized agents being able to 
+communicate with one another as they decide trades.
+
+This server could also be used for observability of
+decentralized agents trading performance.
+
+"""
+
 from typing import Union
 from fastapi import FastAPI
 
@@ -22,6 +32,3 @@ def read_trade(trade_id: int, q: Union[str, None] = None):
 @app.get("/markets/{market_id}")
 def read_market(market_id: int, q: Union[str, None] = None):
     return {"market_id": market_id, "q": q}
-
-
-# post new prompt

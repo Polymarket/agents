@@ -1,15 +1,20 @@
 import os
+import time
+import json
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings
 
 from ai.llm import prompts
 from api.gamma import GammaMarketClient
-from polymarket.agents.ai.llm.prompts import Prompter
+from ai.llm.prompts import Prompter
+from ai.rag.chroma import Chroma
 
 
 class Executor:
+
     def __init__(self):
         load_dotenv()
         self.prompter = Prompter()
@@ -18,7 +23,13 @@ class Executor:
             model="gpt-3.5-turbo",
             temperature=0,
         )
+        self.llm_embedding_function = OpenAIEmbeddings(model="text-embedding-3-small")
         self.client = GammaMarketClient()
+        self.chroma = Chroma()
+
+        self.local_data_directory = "./localDb"
+        if not os.path.isdir(self.local_data_directory):
+            os.mkdir(self.local_data_directory)
 
     def get_llm_response(self, user_input: str) -> str:
         system_message = SystemMessage(content=str(prompts.market_analyst))
@@ -47,8 +58,32 @@ class Executor:
         result = self.llm.invoke(messages)
         return result.content
 
-    def filter_events(self):
-        pass
+    def filter_events(self, events):
+        if not self.chroma:
+            # create local embedding for events
+            local_events_embedding_path = f"{self.local_data_directory}/events.json"
+            if os.path.isfile(self.local_data_directory):
+                os.remove(local_events_embedding_path)
+            with open(local_events_embedding_path, "w+") as output_file:
+                json.dump(events, output_file)
+
+            # load embedding into chroma
+            local_db = Chroma(
+                persist_directory=self.local_data_directory,
+                embedding_function=self.llm_embedding_function,
+            )
+
+            # query using a prompt
+            prompt = self.prompter.filter_events()
+            print(prompt)
+            response_docs = local_db.similarity_search_with_score(query=prompt)
+            print(response_docs)
+            return response_docs
+
+        else:
+            self.chroma.create_local_markets_rag()
+            prompt = self.prompter.filter_events()
+            return self.chroma.query_local_markets_rag(prompt)
 
     def filter_markets(self):
         pass

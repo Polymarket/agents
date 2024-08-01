@@ -121,7 +121,7 @@ class Prompter:
 
     def filter_events(self) -> str:
         return (
-            self.polymarket_analyst_api(self)
+            self.polymarket_analyst_api()
             + """
         
         Filter events for the ones you will be best at trading on profitably.

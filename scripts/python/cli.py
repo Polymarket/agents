@@ -3,14 +3,14 @@ from devtools import pprint
 
 from api.polymarket import Polymarket
 from ai.llm import executor, prompts
-from ai.rag.chroma import PolymarketRAG
+from ai.rag.chroma import Chroma
 from data.news.newsapiorg.api import API as NewsApiCaller
 from jobs.scheduler import TradingAgent
 
 app = typer.Typer()
 polymarket = Polymarket()
 newsapi_client = NewsApiCaller()
-polymarket_rag = PolymarketRAG()
+polymarket_rag = Chroma()
 
 
 @app.command()
@@ -118,12 +118,12 @@ def ask_polymarket_llm(user_input: str):
 
 
 @app.command()
-def run_autonomous_trader(user_input: str):
+def run_autonomous_trader():
     """
     Let an autonomous system trade for you.
     """
     trader = TradingAgent()
-    trader.start()
+    trader.trade()
 
 
 if __name__ == "__main__":
