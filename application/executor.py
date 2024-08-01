@@ -4,9 +4,9 @@ from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 
-from ai.llm import prompts
-from api.gamma import GammaMarketClient
-from polymarket.agents.ai.llm.prompts import Prompter
+from application import prompts
+from connectors.gamma import GammaMarketClient
+from application.prompts import Prompter
 
 
 class Executor:

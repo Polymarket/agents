@@ -1,15 +1,15 @@
 import httpx
 import json
 
-from api.types import PolymarketEvent
-from api.types import Market
-from api.types import ClobReward
-from api.types import Tag
+from connectors.objects import PolymarketEvent
+from connectors.objects import Market
+from connectors.objects import ClobReward
+from connectors.objects import Tag
 
 
 class GammaMarketClient:
     def __init__(self):
-        self.gamma_url = "https://gamma-api.polymarket.com"
+        self.gamma_url = "https://gamma-polymarket.com"
         self.gamma_markets_endpoint = self.gamma_url + "/markets"
         self.gamma_events_endpoint = self.gamma_url + "/events"
 

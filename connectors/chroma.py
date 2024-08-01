@@ -5,7 +5,8 @@ import time
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.document_loaders import JSONLoader
-from api.gamma import GammaMarketClient
+
+from connectors.gamma import GammaMarketClient
 
 
 class PolymarketRAG:

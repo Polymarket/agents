@@ -2,10 +2,10 @@ import os
 
 from newsapi import NewsApiClient
 
-from data.news.types import Article
+from connectors.objects import Article
 
 
-class API:
+class News:
     def __init__(self) -> None:
         self.configs = {
             "language": "en",

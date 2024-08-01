@@ -1,9 +1,6 @@
 import datetime as dt
 import time
-from polymarket.agents.lib.trade import Trader
-
-from polymarket.agents.lib.history import record_history
-from polymarket.agents.lib.refresh import refresh_trades
+from application.trade import Trader
 
 from scheduler import Scheduler
 from scheduler.trigger import Monday
@@ -25,8 +22,6 @@ class TradingAgent(Scheduler):
         super()
         self.trader = Trader()
         self.weekly(Monday(), self.trader.one_best_trade)
-        self.daily(dt.time(hour=12), refresh_trades)
-        self.hourly(dt.time(minute=30), record_history)
 
 
 # TODO: add task objects for generalized schedule management infrastructure

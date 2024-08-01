@@ -1,15 +1,15 @@
 import typer
 from devtools import pprint
 
-from api.polymarket import Polymarket
-from ai.llm import executor, prompts
-from ai.rag.chroma import PolymarketRAG
-from data.news.newsapiorg.api import API as NewsApiCaller
-from jobs.scheduler import TradingAgent
+from connectors.polymarket import Polymarket
+from application import executor, prompts
+from connectors.chroma import PolymarketRAG
+from connectors.news import News
+from application.cron import TradingAgent
 
 app = typer.Typer()
 polymarket = Polymarket()
-newsapi_client = NewsApiCaller()
+newsapi_client = News()
 polymarket_rag = PolymarketRAG()
 
 

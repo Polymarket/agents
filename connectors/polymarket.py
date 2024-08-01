@@ -22,15 +22,14 @@ from py_order_utils.signer import Signer
 from py_clob_client.clob_types import OrderArgs
 from py_clob_client.order_builder.constants import BUY
 
-from api.polymarket.types import SimpleMarket
-from api.polymarket.types import SimpleEvent
+from connectors.objects import SimpleMarket, SimpleEvent
 
 load_dotenv()
 
 
 class Polymarket:
     def __init__(self):
-        self.gamma_url = "https://gamma-api.polymarket.com"
+        self.gamma_url = "https://gamma-com"
         self.gamma_markets_endpoint = self.gamma_url + "/markets"
         self.gamma_events_endpoint = self.gamma_url + "/events"
 
@@ -45,8 +44,8 @@ class Polymarket:
         self.exchange_address = "0x4bfb41d5b3570defd03c39a9a4d8de6bd8b8982e"
         self.neg_risk_exchange_address = "0xC5d563A36AE78145C45a50134d48A1215220f80a"
 
-        self._init_api_keys()
-        self._init_approvals(True)
+        # self._init_api_keys()
+        # self._init_approvals(True)
 
     def _init_api_keys(self):
         self.client = ClobClient(
@@ -346,7 +345,7 @@ def test():
 
 
 def gamma():
-    url = "https://gamma-api.polymarket.com"
+    url = "https://gamma-com"
     markets_url = url + "/markets"
     res = httpx.get(markets_url)
     code = res.status_code

@@ -1,18 +1,16 @@
-from polymarket.agents.ai.llm.executor import Executor as Agent
-from polymarket.agents.api.polymarket import Polymarket
-from polymarket.agents.data.newspaper import Newspaper
+from application.executor import Executor as Agent
+from connectors.polymarket import Polymarket
 
 
-class Creator:
+class Trader:
     def __init__(self):
         self.polymarket = Polymarket()
-        self.newspaper = Newspaper()
         self.agent = Agent()
 
-    def one_best_market(self):
+    def one_best_trade(self):
         """
 
-        one_best_market is a strategy that evaluates all events, markets, and orderbooks
+        one_best_trade is a strategy that evaluates all events, markets, and orderbooks
 
         leverages all available information sources accessible to the autonomous agent
 
@@ -25,7 +23,14 @@ class Creator:
         markets = self.agent.filter_markets()
         orderbooks = [self.polymarket.get_orderbooks(m) for m in markets]
         orderbooks = self.agent.filter_orderbooks()
-        return self.agent.source_best_market_to_create(
+        best_trade = self.agent.source_best_trade(
             events, markets, orderbooks, self.newspaper
         )
-        # TODO: format response into json api
+        formatted_best_trade = self.agent.format_trade_prompt_for_execution(best_trade)
+        return self.polymarket.execute_order(**formatted_best_trade)
+
+    def maintain_positions(self):
+        pass
+
+    def incentive_farm(self):
+        pass
