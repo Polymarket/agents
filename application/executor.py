@@ -1,6 +1,7 @@
 import os
 import json
 import pdb
+import ast
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -86,8 +87,30 @@ class Executor:
     def filter_orderbooks(self):
         pass
 
-    def source_best_trade(self, market):
-        pass
+    def source_best_trade(self, market_object):
+        market_document = market_object[0].dict()
+        market = market_document["metadata"]
+        outcome_prices = ast.literal_eval(market["outcome_prices"])
+        outcomes = ast.literal_eval(market["outcomes"])
+        question = market["question"]
+        description = market_document["page_content"]
+
+        prompt = self.prompter.superforecaster(question, description, outcomes)
+        print()
+        print("... prompting ... ", prompt)
+        print()
+        result = self.llm.invoke(prompt)
+        content = result.content
+        print("result: ", content)
+        print()
+        prompt = self.prompter.one_best_trade(content, outcomes, outcome_prices)
+        print("... prompting ... ", prompt)
+        print()
+        result = self.llm.invoke(prompt)
+        content = result.content
+        print("result: ", content)
+        print()
+        return content
 
     def format_trade_prompt_for_execution(self):
         pass

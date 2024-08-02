@@ -3,7 +3,6 @@ from connectors.gamma import GammaMarketClient as Gamma
 from connectors.polymarket import Polymarket
 
 import pdb
-import json
 
 
 class Trader:
@@ -35,10 +34,13 @@ class Trader:
             filtered_markets = self.agent.filter_markets(markets)
             print(f"4. FILTERED {len(filtered_markets)} MARKETS")
 
+            # TODO: use even more data to build even better models!
+
             # orderbooks = [self.polymarket.get_orderbooks(m) for m in markets]
             # orderbooks = self.agent.filter_orderbooks()
 
-            # best_trade = self.agent.source_best_trade(filtered_markets[0])
+            best_trade = self.agent.source_best_trade(filtered_markets[0])
+            print(f"5. CALCULATED TRADE {best_trade}")
             # formatted_best_trade = self.agent.format_trade_prompt_for_execution(best_trade)
 
             # return self.polymarket.execute_order(**formatted_best_trade)
