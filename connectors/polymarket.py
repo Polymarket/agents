@@ -29,7 +29,7 @@ load_dotenv()
 
 class Polymarket:
     def __init__(self):
-        self.gamma_url = "https://gamma-com"
+        self.gamma_url = "https://gamma-api.polymarket.com"
         self.gamma_markets_endpoint = self.gamma_url + "/markets"
         self.gamma_events_endpoint = self.gamma_url + "/events"
 
@@ -205,18 +205,18 @@ class Polymarket:
             market = data[0]
             return self.map_api_to_market(market, token_id)
 
-    def map_api_to_market(self, market, token_id) -> SimpleMarket:
+    def map_api_to_market(self, market, token_id: str = "") -> SimpleMarket:
         market = {
             "id": int(market["id"]),
             "question": market["question"],
             "end": market["endDate"],
             "description": market["description"],
             "active": market["active"],
-            "deployed": market["deployed"],
+            # "deployed": market["deployed"],
             "funded": market["funded"],
             "rewardsMinSize": float(market["rewardsMinSize"]),
             "rewardsMaxSpread": float(market["rewardsMaxSpread"]),
-            "volume": float(market["volume"]),
+            # "volume": float(market["volume"]),
             "spread": float(market["spread"]),
             "outcomes": str(market["outcomes"]),
             "outcome_prices": str(market["outcomePrices"]),

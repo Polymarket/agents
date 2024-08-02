@@ -26,4 +26,4 @@ archive.zip
 .*.sw?
 .cache
 .DS_Store
-local_db/
+local_db*

@@ -9,7 +9,7 @@ from connectors.objects import Tag
 
 class GammaMarketClient:
     def __init__(self):
-        self.gamma_url = "https://gamma-polymarket.com"
+        self.gamma_url = "https://gamma-api.polymarket.com"
         self.gamma_markets_endpoint = self.gamma_url + "/markets"
         self.gamma_events_endpoint = self.gamma_url + "/events"
 
@@ -175,3 +175,10 @@ class GammaMarketClient:
                 "enableOrderBook": True,
             }
         )
+
+    def get_market(self, market_id: int):
+        url = self.gamma_markets_endpoint + "/" + str(market_id)
+        print(url)
+        response = httpx.get(url)
+        return response.json()
+        # 902884

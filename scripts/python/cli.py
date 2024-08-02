@@ -1,3 +1,4 @@
+from polymarket.agents.application.trade import Trader
 import typer
 from devtools import pprint
 
@@ -52,11 +53,17 @@ def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
 
 @app.command()
 def create_local_markets_rag(local_directory: str):
+    """
+    Create a local markets database for RAG
+    """
     polymarket_rag.create_local_markets_rag(local_directory=local_directory)
 
 
 @app.command()
 def query_local_markets_rag(vector_db_directory: str, query: str):
+    """
+    RAG over a local database of Polymarket's events
+    """
     response = polymarket_rag.query_local_markets_rag(
         local_directory=vector_db_directory, query=query
     )
@@ -65,6 +72,9 @@ def query_local_markets_rag(vector_db_directory: str, query: str):
 
 @app.command()
 def ask_superforecaster(event_title: str, market_question: str, outcome: str):
+    """
+    Ask a superforecaster about a trade
+    """
     print(
         f"event: str = {event_title}, question: str = {market_question}, outcome (usually yes or no): str = {outcome}"
     )
@@ -76,11 +86,17 @@ def ask_superforecaster(event_title: str, market_question: str, outcome: str):
 
 @app.command()
 def ask_expert(market_question: str) -> str:
+    """
+    Ask an expert about a trade
+    """
     print(f"We are finding a list of experts for {market_question}")
 
 
 @app.command()
 def evaluate_trade(market_summary: str, relevant_info: str):
+    """
+    Evaluate a trading opportunity
+    """
     print(
         f"market_summary: str = {market_summary}, relevant_info: str = {relevant_info}"
     )
@@ -89,6 +105,9 @@ def evaluate_trade(market_summary: str, relevant_info: str):
 
 @app.command()
 def execute_trade(market_id: int, price: int, ask_or_bid: str):
+    """
+    Execute a trade on Polymarket
+    """
     print(
         f"market_id: int = {market_id}, price: int = {price}, ask_or_bid: str = {ask_or_bid}"
     )
@@ -96,6 +115,9 @@ def execute_trade(market_id: int, price: int, ask_or_bid: str):
 
 @app.command()
 def create_market(market_description: str):
+    """
+    Format a request to create a market on Polymarket
+    """
     print(f"market_description: str = {market_description}")
 
 
@@ -122,8 +144,8 @@ def run_autonomous_trader(user_input: str):
     """
     Let an autonomous system trade for you.
     """
-    trader = TradingAgent()
-    trader.start()
+    trader = Trader()
+    trader.one_best_trade()
 
 
 if __name__ == "__main__":

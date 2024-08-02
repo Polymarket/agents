@@ -1,4 +1,5 @@
 class Prompter:
+
     def generate_simple_ai_trader(market_description: str, relevant_info: str) -> str:
         return f"""
             
@@ -121,10 +122,20 @@ class Prompter:
 
     def filter_events(self) -> str:
         return (
-            self.polymarket_analyst_api(self)
-            + """
+            self.polymarket_analyst_api()
+            + f"""
         
-        Filter events for the ones you will be best at trading on profitably.
+        Filter these events for the ones you will be best at trading on profitably.
+
+        """
+        )
+
+    def filter_markets(self) -> str:
+        return (
+            self.polymarket_analyst_api()
+            + f"""
+        
+        Filter these markets for the ones you will be best at trading on profitably.
 
         """
         )

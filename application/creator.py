@@ -5,7 +5,6 @@ from connectors.polymarket import Polymarket
 class Creator:
     def __init__(self):
         self.polymarket = Polymarket()
-        self.newspaper = Newspaper()
         self.agent = Agent()
 
     def one_best_market(self):

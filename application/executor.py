@@ -1,12 +1,16 @@
 import os
+import json
+import pdb
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 
-from application import prompts
-from connectors.gamma import GammaMarketClient
+from connectors.gamma import GammaMarketClient as Gamma
+from connectors.chroma import PolymarketRAG as Chroma
+from connectors.objects import SimpleEvent
 from application.prompts import Prompter
+from connectors.polymarket import Polymarket
 
 
 class Executor:
@@ -18,10 +22,12 @@ class Executor:
             model="gpt-3.5-turbo",
             temperature=0,
         )
-        self.client = GammaMarketClient()
+        self.gamma = Gamma()
+        self.chroma = Chroma()
+        self.polymarket = Polymarket()
 
     def get_llm_response(self, user_input: str) -> str:
-        system_message = SystemMessage(content=str(prompts.market_analyst))
+        system_message = SystemMessage(content=str(self.prompter.market_analyst()))
         human_message = HumanMessage(content=user_input)
         messages = [system_message, human_message]
         result = self.llm.invoke(messages)
@@ -30,33 +36,57 @@ class Executor:
     def get_superforecast(
         self, event_title: str, market_question: str, outcome: str
     ) -> str:
-        messages = prompts.superforecaster(
+        messages = self.prompter.superforecaster(
             event_title=event_title, market_question=market_question, outcome=outcome
         )
         result = self.llm.invoke(messages)
         return result.content
 
     def get_polymarket_llm(self, user_input: str) -> str:
-        data1 = self.client.get_current_events()
-        data2 = self.client.get_current_markets()
+        data1 = self.gamma.get_current_events()
+        data2 = self.gamma.get_current_markets()
         system_message = SystemMessage(
-            content=str(prompts.prompts_polymarket(data1=data1, data2=data2))
+            content=str(self.prompter.prompts_polymarket(data1=data1, data2=data2))
         )
         human_message = HumanMessage(content=user_input)
         messages = [system_message, human_message]
         result = self.llm.invoke(messages)
         return result.content
 
-    def filter_events(self):
-        pass
+    def filter_events(self, events: "list[SimpleEvent]"):
+        prompt = self.prompter.filter_events(events)
+        result = self.llm.invoke(prompt)
+        return result.content
 
-    def filter_markets(self):
-        pass
+    def filter_events_with_rag(self, events: "list[SimpleEvent]"):
+        prompt = self.prompter.filter_events()
+        print()
+        print("... prompting ... ", prompt)
+        print()
+        return self.chroma.events(events, prompt)
+
+    def map_filtered_events_to_markets(self, filtered_events):
+        markets = []
+        for e in filtered_events:
+            data = json.loads(e[0].json())
+            market_ids = data["metadata"]["markets"].split(",")
+            for market_id in market_ids:
+                market_data = self.gamma.get_market(market_id)
+                formatted_market_data = self.polymarket.map_api_to_market(market_data)
+                markets.append(formatted_market_data)
+        return markets
+
+    def filter_markets(self, markets):
+        prompt = self.prompter.filter_markets()
+        print()
+        print("... prompting ... ", prompt)
+        print()
+        return self.chroma.markets(markets, prompt)
 
     def filter_orderbooks(self):
         pass
 
-    def source_best_trade(self):
+    def source_best_trade(self, market):
         pass
 
     def format_trade_prompt_for_execution(self):
