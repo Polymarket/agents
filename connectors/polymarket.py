@@ -19,7 +19,7 @@ from py_clob_client.constants import AMOY, POLYGON
 from py_order_utils.builders import OrderBuilder
 from py_order_utils.model import OrderData
 from py_order_utils.signer import Signer
-from py_clob_client.clob_types import OrderArgs
+from py_clob_client.clob_types import OrderArgs, MarketOrderArgs, OrderType
 from py_clob_client.order_builder.constants import BUY
 
 from connectors.objects import SimpleMarket, SimpleEvent
@@ -44,8 +44,10 @@ class Polymarket:
         self.exchange_address = "0x4bfb41d5b3570defd03c39a9a4d8de6bd8b8982e"
         self.neg_risk_exchange_address = "0xC5d563A36AE78145C45a50134d48A1215220f80a"
 
-        # self._init_api_keys()
-        self._init_approvals(False)  # set to True first time running this!
+        self._init_api_keys()
+        self._init_approvals(
+            False
+        )  # set to True first time running this! (could use an env var)
 
     def _init_api_keys(self):
         self.client = ClobClient(
@@ -315,6 +317,17 @@ class Polymarket:
         return self.client.create_and_post_order(
             OrderArgs(price=price, size=size, side=side, token_id=token_id)
         )
+
+    def execute_market_order(self, amount, token_id):
+        order_args = MarketOrderArgs(
+            token_id=token_id,
+            amount=amount,
+        )
+        signed_order = self.client.create_market_order(order_args)
+        resp = self.client.post_order(signed_order, orderType=OrderType.FOK)
+        print(resp)
+        print("Done!")
+        return resp
 
 
 def test():
