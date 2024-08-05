@@ -40,6 +40,7 @@ class Creator:
 
             best_market = self.agent.source_best_market_to_create(filtered_markets)
             print(f"5. IDEA FOR NEW MARKET {best_market}")
+            return best_market
 
         except Exception as e:
             print(f"Error {e} \n \n Retrying")

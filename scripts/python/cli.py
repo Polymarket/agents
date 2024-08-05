@@ -1,4 +1,4 @@
-from polymarket.agents.application.trade import Trader
+from polymarket.agents.application.creator import Creator
 import typer
 from devtools import pprint
 
@@ -7,6 +7,7 @@ from application import executor, prompts
 from connectors.chroma import PolymarketRAG
 from connectors.news import News
 from application.cron import TradingAgent
+from application.trade import Trader
 
 app = typer.Typer()
 polymarket = Polymarket()
@@ -89,7 +90,7 @@ def ask_expert(market_question: str) -> str:
     """
     Ask an expert about a trade
     """
-    print(f"We are finding a list of experts for {market_question}")
+    print(f"...We are finding a list of experts for {market_question}")
 
 
 @app.command()
@@ -98,7 +99,7 @@ def evaluate_trade(market_summary: str, relevant_info: str):
     Evaluate a trading opportunity
     """
     print(
-        f"market_summary: str = {market_summary}, relevant_info: str = {relevant_info}"
+        f"Evaluating... market_summary: str = {market_summary}, relevant_info: str = {relevant_info}"
     )
     print(f"{prompts.generate_simple_ai_trader()}")
 
@@ -109,15 +110,17 @@ def execute_trade(market_id: int, price: int, ask_or_bid: str):
     Execute a trade on Polymarket
     """
     print(
-        f"market_id: int = {market_id}, price: int = {price}, ask_or_bid: str = {ask_or_bid}"
+        f"Planning... market_id: int = {market_id}, price: int = {price}, ask_or_bid: str = {ask_or_bid}"
     )
 
 
 @app.command()
-def create_market(market_description: str):
+def create_market():
     """
     Format a request to create a market on Polymarket
     """
+    c = Creator()
+    market_description = c.one_best_market()
     print(f"market_description: str = {market_description}")
 
 
@@ -140,7 +143,7 @@ def ask_polymarket_llm(user_input: str):
 
 
 @app.command()
-def run_autonomous_trader(user_input: str):
+def run_autonomous_trader():
     """
     Let an autonomous system trade for you.
     """
