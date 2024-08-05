@@ -55,9 +55,8 @@ This repo is inteded for use with Python 3.9
    - Add the following environment variables:
 
    ```
-   POLYMARKET_API_KEY=your_polymarket_api_key
-   POLYMARKET_SECRET=your_polymarket_secret
-   POLYMARKET_PASS_PHRASE=your_polymarket_pass_phrase
+   POLYGON_WALLET_PRIVATE_KEY=""
+   OPENAI_API_KEY=""
    ```
 
 6. Load your wallet with USDC.
