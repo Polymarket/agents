@@ -44,7 +44,7 @@ class Polymarket:
         self.exchange_address = "0x4bfb41d5b3570defd03c39a9a4d8de6bd8b8982e"
         self.neg_risk_exchange_address = "0xC5d563A36AE78145C45a50134d48A1215220f80a"
 
-        # self._init_api_keys()
+        self._init_api_keys()
         self._init_approvals(False)  # set to True first time running this!
 
     def _init_api_keys(self):

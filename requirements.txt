@@ -112,7 +112,7 @@ poly_eip712_structs==0.0.1
 posthog==3.5.0
 pre-commit==3.8.0
 protobuf==4.25.4
-py_clob_client==0.17.1
+py_clob_client==0.17.5
 py_order_utils==0.3.2
 pyasn1==0.6.0
 pyasn1_modules==0.4.0
