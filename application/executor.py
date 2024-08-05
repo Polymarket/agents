@@ -123,5 +123,11 @@ class Executor:
         usdc_balance = self.polymarket.get_usdc_balance()
         return float(size) * usdc_balance
 
-    def source_best_market_to_create(self):
-        pass
+    def source_best_market_to_create(self, filtered_markets):
+        prompt = self.prompter.create_new_market(filtered_markets)
+        print()
+        print("... prompting ... ", prompt)
+        print()
+        result = self.llm.invoke(prompt)
+        content = result.content
+        return content

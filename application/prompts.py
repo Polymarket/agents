@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 
 
 class Prompter:
@@ -220,5 +221,26 @@ class Prompter:
         In this case, you would return "0.1".
 
         Only return the number after size:
+        
+        """
+
+    def create_new_market(self, filtered_markets: str) -> str:
+        return f"""
+        {filtered_markets}
+        
+        Invent an information market similar to these markets that ends in the future,
+        at least 6 months after today, which is: {datetime.today().strftime('%Y-%m-%d')},
+        so this date plus 6 months at least.
+
+        Output your format in:
+        
+        Question: "..."?
+        Outcomes: A or B
+
+        With ... filled in and A or B options being the potential results.
+        For example:
+
+        Question: "Will Kamala win"
+        Outcomes: Yes or No
         
         """
