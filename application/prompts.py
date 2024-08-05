@@ -177,4 +177,4 @@ class Prompter:
         Your trade should approximate price using the likelihood in your prediction.
         
         """
-        )
+        )  # TODO: try formatting this better to make the trade closer to the prediction ...

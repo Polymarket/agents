@@ -2,6 +2,7 @@ import os
 import json
 import pdb
 import ast
+import time
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -101,6 +102,7 @@ class Executor:
         print()
         result = self.llm.invoke(prompt)
         content = result.content
+        time.sleep(5)
         print("result: ", content)
         print()
         prompt = self.prompter.one_best_trade(content, outcomes, outcome_prices)
@@ -108,6 +110,7 @@ class Executor:
         print()
         result = self.llm.invoke(prompt)
         content = result.content
+        time.sleep(5)
         print("result: ", content)
         print()
         return content

@@ -3,6 +3,7 @@ from connectors.gamma import GammaMarketClient as Gamma
 from connectors.polymarket import Polymarket
 
 import pdb
+import time
 
 
 class Trader:
@@ -29,8 +30,11 @@ class Trader:
             print(f"2. FILTERED {len(filtered_events)} EVENTS")
 
             markets = self.agent.map_filtered_events_to_markets(filtered_events)
+            print()
             print(f"3. FOUND {len(filtered_events)} MARKETS")
 
+            time.sleep(5)
+            print()
             filtered_markets = self.agent.filter_markets(markets)
             print(f"4. FILTERED {len(filtered_markets)} MARKETS")
 
@@ -39,6 +43,7 @@ class Trader:
             # orderbooks = [self.polymarket.get_orderbooks(m) for m in markets]
             # orderbooks = self.agent.filter_orderbooks()
 
+            time.sleep(5)
             best_trade = self.agent.source_best_trade(filtered_markets[0])
             print(f"5. CALCULATED TRADE {best_trade}")
             # formatted_best_trade = self.agent.format_trade_prompt_for_execution(best_trade)
