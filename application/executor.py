@@ -3,6 +3,7 @@ import json
 import pdb
 import ast
 import time
+import re
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -115,8 +116,12 @@ class Executor:
         print()
         return content
 
-    def format_trade_prompt_for_execution(self):
-        pass
+    def format_trade_prompt_for_execution(self, best_trade: str) -> float:
+        data = best_trade.split(",")
+        # price = re.findall("\d+\.\d+", data[0])[0]
+        size = re.findall("\d+\.\d+", data[1])[0]
+        usdc_balance = self.polymarket.get_usdc_balance()
+        return float(size) * usdc_balance
 
     def source_best_market_to_create(self):
         pass

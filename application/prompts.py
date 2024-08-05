@@ -169,12 +169,56 @@ class Prompter:
 
         Given your prediction, respond with a genius trade in the format:
         `
-            price: price on the orderbook
-            size: percentage of total funds
-            side: BUY or SELL
+            price:'price_on_the_orderbook',
+            size:'percentage_of_total_funds',
+            side: BUY or SELL,
         `
 
         Your trade should approximate price using the likelihood in your prediction.
+
+        Example response:
+
+        RESPONSE```
+            price:0.5,
+            size:0.1,
+            side:BUY,
+        ```
         
         """
-        )  # TODO: try formatting this better to make the trade closer to the prediction ...
+        )
+
+    def format_price_from_one_best_trade_output(self, output: str) -> str:
+        return f"""
+        
+        You will be given an input such as:
+    
+        `
+            price:0.5,
+            size:0.1,
+            side:BUY,
+        `
+
+        Please extract only the value associated with price.
+        In this case, you would return "0.5".
+
+        Only return the number after price:
+        
+        """
+
+    def format_size_from_one_best_trade_output(self, output: str) -> str:
+        return f"""
+        
+        You will be given an input such as:
+    
+        `
+            price:0.5,
+            size:0.1,
+            side:BUY,
+        `
+
+        Please extract only the value associated with price.
+        In this case, you would return "0.1".
+
+        Only return the number after size:
+        
+        """

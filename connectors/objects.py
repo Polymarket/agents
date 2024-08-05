@@ -41,7 +41,7 @@ class SimpleMarket(BaseModel):
     spread: float
     outcomes: str
     outcome_prices: str
-    token_id: Optional[str]
+    clob_token_ids: Optional[str]
 
 
 class ClobReward(BaseModel):

@@ -23,7 +23,7 @@ class Trader:
 
         """
         try:
-            events = self.polymarket.get_all_events()
+            events = self.polymarket.get_all_tradeable_events()
             print(f"1. FOUND {len(events)} EVENTS")
 
             filtered_events = self.agent.filter_events_with_rag(events)
@@ -31,7 +31,7 @@ class Trader:
 
             markets = self.agent.map_filtered_events_to_markets(filtered_events)
             print()
-            print(f"3. FOUND {len(filtered_events)} MARKETS")
+            print(f"3. FOUND {len(markets)} MARKETS")
 
             time.sleep(5)
             print()
@@ -39,16 +39,19 @@ class Trader:
             print(f"4. FILTERED {len(filtered_markets)} MARKETS")
 
             # TODO: use even more data to build even better models!
-
             # orderbooks = [self.polymarket.get_orderbooks(m) for m in markets]
             # orderbooks = self.agent.filter_orderbooks()
 
             time.sleep(5)
-            best_trade = self.agent.source_best_trade(filtered_markets[0])
+            market = filtered_markets[0]
+            best_trade = self.agent.source_best_trade(market)
             print(f"5. CALCULATED TRADE {best_trade}")
-            # formatted_best_trade = self.agent.format_trade_prompt_for_execution(best_trade)
 
-            # return self.polymarket.execute_order(**formatted_best_trade)
+            # TODO: explore more complex trading logic!
+            amount = self.agent.format_trade_prompt_for_execution(best_trade)
+            trade = self.polymarket.execute_market_order(market, amount)
+            print(f"6. TRADED {trade}")
+
         except Exception as e:
             print(f"Error {e} \n \n Retrying")
             self.one_best_trade()

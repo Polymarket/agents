@@ -6,6 +6,8 @@ from connectors.objects import Market
 from connectors.objects import ClobReward
 from connectors.objects import Tag
 
+from connectors.polymarket import Polymarket
+
 
 class GammaMarketClient:
     def __init__(self):
@@ -181,4 +183,10 @@ class GammaMarketClient:
         print(url)
         response = httpx.get(url)
         return response.json()
-        # 902884
+
+
+if __name__ == "__main__":
+    gamma = GammaMarketClient()
+    market = gamma.get_market("253123")
+    poly = Polymarket()
+    object = poly.map_api_to_market(market)

@@ -108,6 +108,7 @@ class PolymarketRAG:
             metadata["outcomes"] = record.get("outcomes")
             metadata["outcome_prices"] = record.get("outcome_prices")
             metadata["question"] = record.get("question")
+            metadata["clob_token_ids"] = record.get("clob_token_ids")
 
             return metadata
 
