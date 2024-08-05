@@ -269,7 +269,12 @@ class Polymarket:
     ) -> "list[SimpleEvent]":
         tradeable_events = []
         for event in events:
-            if event.active and not event.restricted:
+            if (
+                event.active
+                and not event.restricted
+                and not event.archived
+                and not event.closed
+            ):
                 tradeable_events.append(event)
         return tradeable_events
 
