@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnablePassthrough
+from langchain.prompts import ChatPromptTemplate
 from ai.llm import prompts
 from api.polymarket.gamma_market_client import GammaMarketClient
 
@@ -45,6 +46,11 @@ def get_polymarket_llm(user_input: str) -> str:
     messages = [system_message, human_message]
     result = llm.invoke(messages)
     return result.content
+
+
+def generate_queries(user_input: str) -> str:
+    prompt_perspectives = ChatPromptTemplate.from_template(prompts.decomposition_prompt)
+    generate_queries = prompt_perspectives | ChatOpenAI(temperature=0)
 
 
 # add prompts on market data and news data

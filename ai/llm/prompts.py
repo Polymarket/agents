@@ -48,7 +48,7 @@ def superforecaster(event_title: str, market_question: str, outcome: str) -> str
         - Seek out diverse sources of information.
         - Look for both quantitative data and qualitative insights.
         - Stay updated on relevant news and expert analyses.
-    3. Considere Base Rates:
+    3. Consider Base Rates:
         - Use statistical baselines or historical averages as a starting point.
         - Compare the current situation to similar past events to establish a benchmark probability.
     4. Identify and Evaluate Factors:
@@ -62,24 +62,6 @@ def superforecaster(event_title: str, market_question: str, outcome: str) -> str
     
     Given these steps produce a statement on the probability of {outcome} occuring.
 
-    Give your response in the following format:
-
-    I believe {market_question} has a likelihood {float} for outcome of {outcome}.
-    """
-
-
-def prompts_polymarket(data1: str, data2: str, user_input: str) -> str:
-    current_market_data = str(data1)
-    current_event_data = str(data2)
-    return f"""
-    You are an AI assistant for users of a prediction market called Polymarket.
-    Users want to place bets based on their beliefs of market outcomes such as political or sports events.
-    
-    Here is data for current Polymarket markets {current_market_data} and 
-    current Polymarket events {current_event_data}.
-
-    Help users identify markets to trade based on their interests or queries.
-    Provide specific information for markets including probabilities of outcomes.
     Give your response in the following format:
 
     I believe {market_question} has a likelihood {float} for outcome of {outcome}.
@@ -115,6 +97,11 @@ def multiquery(question: str) -> str:
 
     """
 
+def decomposition_prompt(question: str) -> str:
+    return f"""You are a helpful assistant that generates multiple sub-questions related to an input question. \n
+    The goal is to break down the input into a set of sub-problems / sub-questions that can be answers in isolation. \n
+    Generate multiple search queries related to: {question} \n
+    Output (3 queries):""" """
 
 def read_polymarket() -> str:
     return f"""

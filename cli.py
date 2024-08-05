@@ -7,7 +7,7 @@ from api.polymarket.polymarket import Polymarket
 from ai.llm import prompt_executor, prompts
 from data_sources.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
 from langchain_core.output_parsers import StrOutputParser
-from data_sources.news_providers.newsapi_org.newsapi_caller import NewsApiCaller
+from langchain.prompts import ChatPromptTemplate
 from local_rag import run_query_on_local_data
 
 app = typer.Typer()
@@ -95,10 +95,11 @@ def ask_llm(user_input: str):
 
 
 @app.command()
-def ask_polymarket_llm(user_input: str):
+def advanced_rag(user_input: str):
     """
-    What types of markets do you want trade?
+    Ask a question, reference Polymarket data, send to LLM, get a response.
     """
+    prompt_perspectives = Chat
 
     rag_chain = (
         {"context": retriever, "question": user_input}
