@@ -45,9 +45,7 @@ class Polymarket:
         self.neg_risk_exchange_address = "0xC5d563A36AE78145C45a50134d48A1215220f80a"
 
         self._init_api_keys()
-        self._init_approvals(
-            False
-        )  # set to True first time running this! (could use an env var)
+        self._init_approvals(False)
 
     def _init_api_keys(self):
         self.client = ClobClient(
@@ -324,6 +322,7 @@ class Polymarket:
             amount=amount,
         )
         signed_order = self.client.create_market_order(order_args)
+        print("Execute market order... signed_order ", signed_order)
         resp = self.client.post_order(signed_order, orderType=OrderType.FOK)
         print(resp)
         print("Done!")
@@ -436,13 +435,17 @@ if __name__ == "__main__":
     )
     test_market_data = p.get_market(test_market_token_id)
 
-    test_size = 0.0001
+    # test_size = 0.0001
+    test_size = 1
     test_side = BUY
     test_price = float(ast.literal_eval(test_market_data["outcome_prices"])[0])
 
-    order = p.execute_order(
-        test_price,
-        test_size,
-        test_side,
-        test_market_token_id,
-    )
+    #order = p.execute_order(
+    #    test_price,
+    #    test_size,
+    #    test_side,
+    #    test_market_token_id,
+    #)
+
+    order = p.execute_market_order(test_price, test_market_token_id)
+
