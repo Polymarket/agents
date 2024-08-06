@@ -132,6 +132,12 @@ If you would like to contribute to this project, please follow these steps:
 3. Make your changes.
 4. Submit a pull request.
 
+Please run pre-commit hooks before making contributions. To initialize them:
+
+   ```
+   pre-commit install
+   ```
+
 # Related Repos
 
 - [py-clob-client](https://github.com/Polymarket/py-clob-client): Python client for the Polymarket CLOB
