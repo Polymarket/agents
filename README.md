@@ -72,13 +72,13 @@ This repo is inteded for use with Python 3.9
    python application/trade.py
    ```
 
-Note: If running the command outside of docker, please set the following env var:
+8. Note: If running the command outside of docker, please set the following env var:
 
    ```
    export PYTHONPATH="."
    ```
 
-If running with docker is preferred, we provide the following scripts:
+   If running with docker is preferred, we provide the following scripts:
 
    ```
    ./scripts/bash/build-docker.sh
@@ -116,9 +116,9 @@ Example:
 `get_all_markets`
 Retrieve and display a list of markets from Polymarket, sorted by volume.
 
-```
-python scripts/python/cli.py get_all_markets --limit <LIMIT> --sort-by <SORT_BY>
-```
+   ```
+   python scripts/python/cli.py get_all_markets --limit <LIMIT> --sort-by <SORT_BY>
+   ```
 
 - limit: The number of markets to retrieve (default: 5).
 - sort_by: The sorting criterion, either volume (default) or another valid attribute.
