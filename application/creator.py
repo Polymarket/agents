@@ -2,7 +2,6 @@ from application.executor import Executor as Agent
 from connectors.gamma import GammaMarketClient as Gamma
 from connectors.polymarket import Polymarket
 
-import pdb
 import time
 
 
@@ -33,7 +32,6 @@ class Creator:
             print()
             print(f"3. FOUND {len(markets)} MARKETS")
 
-            time.sleep(5)
             print()
             filtered_markets = self.agent.filter_markets(markets)
             print(f"4. FILTERED {len(filtered_markets)} MARKETS")

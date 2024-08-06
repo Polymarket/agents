@@ -20,7 +20,13 @@ from py_clob_client.constants import AMOY, POLYGON
 from py_order_utils.builders import OrderBuilder
 from py_order_utils.model import OrderData
 from py_order_utils.signer import Signer
-from py_clob_client.clob_types import OrderArgs, MarketOrderArgs, OrderType
+from py_clob_client.clob_types import (
+    OrderArgs,
+    MarketOrderArgs,
+    OrderType,
+    OrderBookSummary,
+    SignedOrder,
+)
 from py_clob_client.order_builder.constants import BUY
 
 from connectors.objects import SimpleMarket, SimpleEvent
@@ -29,7 +35,7 @@ load_dotenv()
 
 
 class Polymarket:
-    def __init__(self):
+    def __init__(self) -> None:
         self.gamma_url = "https://gamma-api.polymarket.com"
         self.gamma_markets_endpoint = self.gamma_url + "/markets"
         self.gamma_events_endpoint = self.gamma_url + "/events"
@@ -64,7 +70,7 @@ class Polymarket:
         self._init_api_keys()
         self._init_approvals(False)
 
-    def _init_api_keys(self):
+    def _init_api_keys(self) -> None:
         self.client = ClobClient(
             self.clob_url, key=self.private_key, chain_id=self.chain_id
         )
@@ -72,7 +78,7 @@ class Polymarket:
         self.client.set_api_creds(self.credentials)
         # print(self.credentials)
 
-    def _init_approvals(self, run=False):
+    def _init_approvals(self, run: bool = False) -> None:
         if not run:
             return
 
@@ -181,9 +187,6 @@ class Polymarket:
         )
         print(ctf_approval_tx_receipt)
 
-    def get_api_key(self):
-        return self.client.create_or_derive_api_creds()
-
     def get_all_markets(self) -> "list[SimpleMarket]":
         markets = []
         res = httpx.get(self.gamma_markets_endpoint)
@@ -244,9 +247,6 @@ class Polymarket:
                     pass
         return events
 
-    def get_event(self):
-        raise Exception()
-
     def map_api_to_event(self, event) -> SimpleEvent:
         return {
             "id": int(event["id"]),
@@ -282,7 +282,7 @@ class Polymarket:
         all_events = self.get_all_events()
         return self.filter_events_for_trading(all_events)
 
-    def get_sampling_simplified_markets(self):
+    def get_sampling_simplified_markets(self) -> "list[SimpleEvent]":
         markets = []
         raw_sampling_simplified_markets = self.client.get_sampling_simplified_markets()
         for raw_market in raw_sampling_simplified_markets["data"]:
@@ -291,11 +291,11 @@ class Polymarket:
             markets.append(market)
         return markets
 
-    def get_orderbook(self, token_id: str):
+    def get_orderbook(self, token_id: str) -> OrderBookSummary:
         return self.client.get_order_book(token_id)
 
-    def get_orderbook_price(self, token_id: str):
-        return self.client.get_price(token_id)
+    def get_orderbook_price(self, token_id: str) -> float:
+        return float(self.client.get_price(token_id))
 
     def get_address_for_private_key(self):
         account = self.w3.eth.account.from_key(str(self.private_key))
@@ -308,7 +308,7 @@ class Polymarket:
         nonce: str = str(round(time.time())),  # for cancellations
         side: str = "BUY",
         expiration: str = "0",  # timestamp after which order expires
-    ):
+    ) -> SignedOrder:
         signer = Signer(self.private_key)
         builder = OrderBuilder(self.exchange_address, self.chain_id, signer)
 
@@ -329,12 +329,12 @@ class Polymarket:
         order = builder.build_signed_order(order_data)
         return order
 
-    def execute_order(self, price, size, side, token_id):
+    def execute_order(self, price, size, side, token_id) -> str:
         return self.client.create_and_post_order(
             OrderArgs(price=price, size=size, side=side, token_id=token_id)
         )
 
-    def execute_market_order(self, market, amount):
+    def execute_market_order(self, market, amount) -> str:
         token_id = ast.literal_eval(market[0].dict()["metadata"]["clob_token_ids"])[1]
         order_args = MarketOrderArgs(
             token_id=token_id,

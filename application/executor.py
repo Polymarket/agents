@@ -11,13 +11,13 @@ from langchain_openai import ChatOpenAI
 
 from connectors.gamma import GammaMarketClient as Gamma
 from connectors.chroma import PolymarketRAG as Chroma
-from connectors.objects import SimpleEvent
+from connectors.objects import SimpleEvent, SimpleMarket
 from application.prompts import Prompter
 from connectors.polymarket import Polymarket
 
 
 class Executor:
-    def __init__(self):
+    def __init__(self) -> None:
         load_dotenv()
         self.prompter = Prompter()
         self.openai_api_key = os.getenv("OPENAI_API_KEY")
@@ -56,19 +56,21 @@ class Executor:
         result = self.llm.invoke(messages)
         return result.content
 
-    def filter_events(self, events: "list[SimpleEvent]"):
+    def filter_events(self, events: "list[SimpleEvent]") -> str:
         prompt = self.prompter.filter_events(events)
         result = self.llm.invoke(prompt)
         return result.content
 
-    def filter_events_with_rag(self, events: "list[SimpleEvent]"):
+    def filter_events_with_rag(self, events: "list[SimpleEvent]") -> str:
         prompt = self.prompter.filter_events()
         print()
         print("... prompting ... ", prompt)
         print()
         return self.chroma.events(events, prompt)
 
-    def map_filtered_events_to_markets(self, filtered_events):
+    def map_filtered_events_to_markets(
+        self, filtered_events: "list[SimpleEvent]"
+    ) -> "list[SimpleMarket]":
         markets = []
         for e in filtered_events:
             data = json.loads(e[0].json())
@@ -79,17 +81,14 @@ class Executor:
                 markets.append(formatted_market_data)
         return markets
 
-    def filter_markets(self, markets):
+    def filter_markets(self, markets) -> "list[tuple]":
         prompt = self.prompter.filter_markets()
         print()
         print("... prompting ... ", prompt)
         print()
         return self.chroma.markets(markets, prompt)
 
-    def filter_orderbooks(self):
-        pass
-
-    def source_best_trade(self, market_object):
+    def source_best_trade(self, market_object) -> str:
         market_document = market_object[0].dict()
         market = market_document["metadata"]
         outcome_prices = ast.literal_eval(market["outcome_prices"])
@@ -103,7 +102,7 @@ class Executor:
         print()
         result = self.llm.invoke(prompt)
         content = result.content
-        time.sleep(5)
+
         print("result: ", content)
         print()
         prompt = self.prompter.one_best_trade(content, outcomes, outcome_prices)
@@ -111,7 +110,7 @@ class Executor:
         print()
         result = self.llm.invoke(prompt)
         content = result.content
-        time.sleep(5)
+
         print("result: ", content)
         print()
         return content
@@ -123,7 +122,7 @@ class Executor:
         usdc_balance = self.polymarket.get_usdc_balance()
         return float(size) * usdc_balance
 
-    def source_best_market_to_create(self, filtered_markets):
+    def source_best_market_to_create(self, filtered_markets) -> str:
         prompt = self.prompter.create_new_market(filtered_markets)
         print()
         print("... prompting ... ", prompt)

@@ -12,7 +12,7 @@ class Trader:
         self.gamma = Gamma()
         self.agent = Agent()
 
-    def one_best_trade(self):
+    def one_best_trade(self) -> None:
         """
 
         one_best_trade is a strategy that evaluates all events, markets, and orderbooks
@@ -33,16 +33,15 @@ class Trader:
             print()
             print(f"3. FOUND {len(markets)} MARKETS")
 
-            time.sleep(5)
             print()
             filtered_markets = self.agent.filter_markets(markets)
+            pdb.set_trace()
             print(f"4. FILTERED {len(filtered_markets)} MARKETS")
 
             # TODO: use even more data to build even better models!
             # orderbooks = [self.polymarket.get_orderbooks(m) for m in markets]
             # orderbooks = self.agent.filter_orderbooks()
 
-            time.sleep(5)
             market = filtered_markets[0]
             best_trade = self.agent.source_best_trade(market)
             print(f"5. CALCULATED TRADE {best_trade}")

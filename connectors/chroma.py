@@ -20,20 +20,18 @@ class PolymarketRAG:
 
     def load_json_from_local(
         self, json_file_path=None, vector_db_directory="./local_db"
-    ):
+    ) -> None:
         loader = JSONLoader(
             file_path=json_file_path, jq_schema=".[].description", text_content=False
         )
         loaded_docs = loader.load()
 
         embedding_function = OpenAIEmbeddings(model="text-embedding-3-small")
-        db2 = Chroma.from_documents(
+        Chroma.from_documents(
             loaded_docs, embedding_function, persist_directory=vector_db_directory
         )
 
-        return db2
-
-    def create_local_markets_rag(self, local_directory="./local_db"):
+    def create_local_markets_rag(self, local_directory="./local_db") -> None:
         all_markets = self.gamma_client.get_all_current_markets()
 
         if not os.path.isdir(local_directory):
@@ -48,7 +46,9 @@ class PolymarketRAG:
             json_file_path=local_file_path, vector_db_directory=local_directory
         )
 
-    def query_local_markets_rag(self, local_directory=None, query=None):
+    def query_local_markets_rag(
+        self, local_directory=None, query=None
+    ) -> "list[tuple]":
         embedding_function = OpenAIEmbeddings(model="text-embedding-3-small")
         local_db = Chroma(
             persist_directory=local_directory, embedding_function=embedding_function
@@ -56,7 +56,7 @@ class PolymarketRAG:
         response_docs = local_db.similarity_search_with_score(query=query)
         return response_docs
 
-    def events(self, events: "list[SimpleEvent]", prompt: str):
+    def events(self, events: "list[SimpleEvent]", prompt: str) -> "list[tuple]":
         # create local json file
         local_events_directory: str = "./local_db_events"
         if not os.path.isdir(local_events_directory):
@@ -87,12 +87,11 @@ class PolymarketRAG:
         local_db = Chroma.from_documents(
             loaded_docs, embedding_function, persist_directory=vector_db_directory
         )
-        # local_db.persist()
 
         # query
         return local_db.similarity_search_with_score(query=prompt)
 
-    def markets(self, markets: "list[SimpleMarket]", prompt: str):
+    def markets(self, markets: "list[SimpleMarket]", prompt: str) -> "list[tuple]":
         # create local json file
         local_events_directory: str = "./local_db_markets"
         if not os.path.isdir(local_events_directory):
@@ -125,7 +124,6 @@ class PolymarketRAG:
         local_db = Chroma.from_documents(
             loaded_docs, embedding_function, persist_directory=vector_db_directory
         )
-        # local_db.persist()
 
         # query
         return local_db.similarity_search_with_score(query=prompt)

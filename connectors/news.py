@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 
 from newsapi import NewsApiClient
@@ -26,7 +27,7 @@ class News:
 
         self.API = NewsApiClient(os.getenv("NEWSAPI_API_KEY"))
 
-    def get_articles_for_cli_keywords(self, keywords):
+    def get_articles_for_cli_keywords(self, keywords) -> "list[Article]":
         query_words = keywords.split(",")
         all_articles = self.get_articles_for_options(query_words)
         article_objects: list[Article] = []
@@ -35,10 +36,18 @@ class News:
                 article_objects.append(Article(**article))
         return article_objects
 
-    def get_top_articles_for_market(self, market_object):
-        return self.API.get_top_headlines(language="en", country="usa", q=None)
+    def get_top_articles_for_market(self, market_object: dict) -> "list[Article]":
+        return self.API.get_top_headlines(
+            language="en", country="usa", q=market_object["description"]
+        )
 
-    def get_articles_for_options(self, market_options, date_start=None, date_end=None):
+    def get_articles_for_options(
+        self,
+        market_options: "list[str]",
+        date_start: datetime = None,
+        date_end: datetime = None,
+    ) -> "list[Article]":
+
         all_articles = {}
         # Default to top articles if no start and end dates are given for search
         if not date_start and not date_end:
@@ -64,7 +73,7 @@ class News:
 
         return all_articles
 
-    def get_category(self, market_object) -> str:
+    def get_category(self, market_object: dict) -> str:
         news_category = "general"
         market_category = market_object["category"]
         if market_category in self.categories:

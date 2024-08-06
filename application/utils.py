@@ -1,7 +1,7 @@
 import json
 
 
-def parse_camel_case(key):
+def parse_camel_case(key) -> str:
     output = ""
     for char in key:
         if char.isupper():
@@ -12,7 +12,7 @@ def parse_camel_case(key):
     return output
 
 
-def preprocess_market_object(market_object):
+def preprocess_market_object(market_object: dict) -> dict:
     description = market_object["description"]
 
     for k, v in market_object.items():
@@ -32,7 +32,7 @@ def preprocess_market_object(market_object):
     return market_object
 
 
-def preprocess_local_json(file_path, preprocessor_function):
+def preprocess_local_json(file_path: str, preprocessor_function: function) -> None:
     with open(file_path, "r+") as open_file:
         data = json.load(open_file)
 

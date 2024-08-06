@@ -72,6 +72,19 @@ This repo is inteded for use with Python 3.9
    python application/trade.py
    ```
 
+Note: If running the command outside of docker, please set the following env var:
+
+   ```
+   export PYTHONPATH="."
+   ```
+
+If running with docker is preferred, we provide the following scripts:
+
+   ```
+   ./scripts/bash/build-docker.sh
+   ./scripts/bash/run-docker-dev.sh
+   ```
+
 ## Architecture
 
 The Polymarket Agents architecture features modular components that can be maintained and extended by individual community members.
@@ -92,11 +105,11 @@ Polymarket Agents connectors standardize data sources and order types.
 
 Files for managing your local environment, server set-up to run the application remotely, and cli for end-user commands.
 
-`Cli.py` is the primary user interface for the repo. Users can run various commands to interact with the Polymarket API, retrieve relevant news articles, query local data, send data/prompts to LLMs, and execute trades in Polymarkets.
+`cli.py` is the primary user interface for the repo. Users can run various commands to interact with the Polymarket API, retrieve relevant news articles, query local data, send data/prompts to LLMs, and execute trades in Polymarkets.
 
 Commands should follow this format:
 
-`python cli.py command_name [attribute value] [attribute value]`
+`python scripts/python/cli.py command_name [attribute value] [attribute value]`
 
 Example:
 
@@ -104,7 +117,7 @@ Example:
 Retrieve and display a list of markets from Polymarket, sorted by volume.
 
 ```
-python cli.py get_all_markets --limit <LIMIT> --sort-by <SORT_BY>
+python scripts/python/cli.py get_all_markets --limit <LIMIT> --sort-by <SORT_BY>
 ```
 
 - limit: The number of markets to retrieve (default: 5).

@@ -1,4 +1,3 @@
-from polymarket.agents.application.creator import Creator
 import typer
 from devtools import pprint
 
@@ -6,8 +5,8 @@ from connectors.polymarket import Polymarket
 from application import executor, prompts
 from connectors.chroma import PolymarketRAG
 from connectors.news import News
-from application.cron import TradingAgent
 from application.trade import Trader
+from application.creator import Creator
 
 app = typer.Typer()
 polymarket = Polymarket()
@@ -16,7 +15,7 @@ polymarket_rag = PolymarketRAG()
 
 
 @app.command()
-def get_all_markets(limit: int = 5, sort_by: str = "volume"):
+def get_all_markets(limit: int = 5, sort_by: str = "volume") -> None:
     """
     Query Polymarket's markets
     """
@@ -30,7 +29,7 @@ def get_all_markets(limit: int = 5, sort_by: str = "volume"):
 
 
 @app.command()
-def get_relevant_news(keywords: str):
+def get_relevant_news(keywords: str) -> None:
     """
     Use NewsAPI to query the internet
     """
@@ -39,7 +38,7 @@ def get_relevant_news(keywords: str):
 
 
 @app.command()
-def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
+def get_all_events(limit: int = 5, sort_by: str = "number_of_markets") -> None:
     """
     Query Polymarket's events
     """
@@ -53,7 +52,7 @@ def get_all_events(limit: int = 5, sort_by: str = "number_of_markets"):
 
 
 @app.command()
-def create_local_markets_rag(local_directory: str):
+def create_local_markets_rag(local_directory: str) -> None:
     """
     Create a local markets database for RAG
     """
@@ -61,7 +60,7 @@ def create_local_markets_rag(local_directory: str):
 
 
 @app.command()
-def query_local_markets_rag(vector_db_directory: str, query: str):
+def query_local_markets_rag(vector_db_directory: str, query: str) -> None:
     """
     RAG over a local database of Polymarket's events
     """
@@ -72,7 +71,7 @@ def query_local_markets_rag(vector_db_directory: str, query: str):
 
 
 @app.command()
-def ask_superforecaster(event_title: str, market_question: str, outcome: str):
+def ask_superforecaster(event_title: str, market_question: str, outcome: str) -> None:
     """
     Ask a superforecaster about a trade
     """
@@ -86,36 +85,7 @@ def ask_superforecaster(event_title: str, market_question: str, outcome: str):
 
 
 @app.command()
-def ask_expert(market_question: str) -> str:
-    """
-    Ask an expert about a trade
-    """
-    print(f"...We are finding a list of experts for {market_question}")
-
-
-@app.command()
-def evaluate_trade(market_summary: str, relevant_info: str):
-    """
-    Evaluate a trading opportunity
-    """
-    print(
-        f"Evaluating... market_summary: str = {market_summary}, relevant_info: str = {relevant_info}"
-    )
-    print(f"{prompts.generate_simple_ai_trader()}")
-
-
-@app.command()
-def execute_trade(market_id: int, price: int, ask_or_bid: str):
-    """
-    Execute a trade on Polymarket
-    """
-    print(
-        f"Planning... market_id: int = {market_id}, price: int = {price}, ask_or_bid: str = {ask_or_bid}"
-    )
-
-
-@app.command()
-def create_market():
+def create_market() -> None:
     """
     Format a request to create a market on Polymarket
     """
@@ -125,7 +95,7 @@ def create_market():
 
 
 @app.command()
-def ask_llm(user_input: str):
+def ask_llm(user_input: str) -> None:
     """
     Ask a question to the LLM and get a response.
     """
@@ -134,7 +104,7 @@ def ask_llm(user_input: str):
 
 
 @app.command()
-def ask_polymarket_llm(user_input: str):
+def ask_polymarket_llm(user_input: str) -> None:
     """
     What types of markets do you want trade?
     """
@@ -143,7 +113,7 @@ def ask_polymarket_llm(user_input: str):
 
 
 @app.command()
-def run_autonomous_trader():
+def run_autonomous_trader() -> None:
     """
     Let an autonomous system trade for you.
     """

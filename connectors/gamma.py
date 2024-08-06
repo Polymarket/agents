@@ -1,8 +1,7 @@
 import httpx
 import json
 
-from connectors.objects import PolymarketEvent
-from connectors.objects import Market
+from connectors.objects import Market, PolymarketEvent
 from connectors.objects import ClobReward
 from connectors.objects import Tag
 
@@ -15,7 +14,7 @@ class GammaMarketClient:
         self.gamma_markets_endpoint = self.gamma_url + "/markets"
         self.gamma_events_endpoint = self.gamma_url + "/events"
 
-    def parse_pydantic_market(self, market_object):
+    def parse_pydantic_market(self, market_object: dict) -> Market:
         try:
             if "clobRewards" in market_object:
                 clob_rewards: list[ClobReward] = []
@@ -45,7 +44,7 @@ class GammaMarketClient:
             print("exception while handling object:", market_object)
 
     # Event parser for events nested under a markets api response
-    def parse_nested_event(self, event_object):
+    def parse_nested_event(self, event_object: dict()) -> PolymarketEvent:
         print("[parse_nested_event] called with:", event_object)
         try:
             if "tags" in event_object:
@@ -60,7 +59,7 @@ class GammaMarketClient:
             print(f"[parse_event] Caught exception: {err}")
             print("\n", event_object)
 
-    def parse_pydantic_event(self, event_object):
+    def parse_pydantic_event(self, event_object: dict) -> PolymarketEvent:
         try:
             if "tags" in event_object:
                 print("tags here", event_object["tags"])
@@ -74,7 +73,7 @@ class GammaMarketClient:
 
     def get_markets(
         self, querystring_params={}, parse_pydantic=False, local_file_path=None
-    ):
+    ) -> "list[Market]":
         if parse_pydantic and local_file_path is not None:
             raise Exception(
                 'Cannot use "parse_pydantic" and "local_file" params simultaneously.'
@@ -99,7 +98,7 @@ class GammaMarketClient:
 
     def get_events(
         self, querystring_params={}, parse_pydantic=False, local_file_path=None
-    ):
+    ) -> "list[PolymarketEvent]":
         if parse_pydantic and local_file_path is not None:
             raise Exception(
                 'Cannot use "parse_pydantic" and "local_file" params simultaneously.'
@@ -121,13 +120,13 @@ class GammaMarketClient:
         else:
             raise Exception()
 
-    def get_all_markets(self, limit=2):
+    def get_all_markets(self, limit=2) -> "list[Market]":
         return self.get_markets(querystring_params={"limit": limit})
 
-    def get_all_events(self, limit=2):
+    def get_all_events(self, limit=2) -> "list[PolymarketEvent]":
         return self.get_events(querystring_params={"limit": limit})
 
-    def get_current_markets(self, limit=4):
+    def get_current_markets(self, limit=4) -> "list[Market]":
         return self.get_markets(
             querystring_params={
                 "active": True,
@@ -137,7 +136,7 @@ class GammaMarketClient:
             }
         )
 
-    def get_all_current_markets(self, limit=100):
+    def get_all_current_markets(self, limit=100) -> "list[Market]":
         offset = 0
         all_markets = []
         while True:
@@ -157,7 +156,7 @@ class GammaMarketClient:
 
         return all_markets
 
-    def get_current_events(self, limit=4):
+    def get_current_events(self, limit=4) -> "list[PolymarketEvent]":
         return self.get_events(
             querystring_params={
                 "active": True,
@@ -167,7 +166,7 @@ class GammaMarketClient:
             }
         )
 
-    def get_clob_tradable_markets(self, limit=2):
+    def get_clob_tradable_markets(self, limit=2) -> "list[Market]":
         return self.get_markets(
             querystring_params={
                 "active": True,
@@ -178,7 +177,7 @@ class GammaMarketClient:
             }
         )
 
-    def get_market(self, market_id: int):
+    def get_market(self, market_id: int) -> dict():
         url = self.gamma_markets_endpoint + "/" + str(market_id)
         print(url)
         response = httpx.get(url)
