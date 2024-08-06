@@ -26,7 +26,7 @@ This repo is inteded for use with Python 3.9
 2. Create the virtual environment
 
    ```
-   python -m venv venv
+   virtualenv --python=python3.9 .venv
    ```
 
 3. Activate the virtual environment
@@ -34,13 +34,13 @@ This repo is inteded for use with Python 3.9
    - On Windows:
 
    ```
-   venv\Scripts\activate
+   .venv\Scripts\activate
    ```
 
    - On macOS and Linux:
 
    ```
-   source venv/bin/activate
+   source .venv/bin/activate
    ```
 
 4. Install the required dependencies:
@@ -52,6 +52,11 @@ This repo is inteded for use with Python 3.9
 5. Set up your environment variables:
 
    - Create a `.env` file in the project root directory
+
+   ```
+   cp .env.example .env
+   ```
+
    - Add the following environment variables:
 
    ```
