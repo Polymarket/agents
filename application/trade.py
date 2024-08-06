@@ -2,8 +2,7 @@ from application.executor import Executor as Agent
 from connectors.gamma import GammaMarketClient as Gamma
 from connectors.polymarket import Polymarket
 
-import pdb
-import time
+import shutil
 
 
 class Trader:
@@ -11,6 +10,19 @@ class Trader:
         self.polymarket = Polymarket()
         self.gamma = Gamma()
         self.agent = Agent()
+
+    def pre_trade_logic(self) -> None:
+        self.clear_local_dbs()
+
+    def clear_local_dbs(self) -> None:
+        try:
+            shutil.rmtree("local_db_events")
+        except:
+            pass
+        try:
+            shutil.rmtree("local_db_markets")
+        except:
+            pass
 
     def one_best_trade(self) -> None:
         """
@@ -23,6 +35,8 @@ class Trader:
 
         """
         try:
+            self.pre_trade_logic()
+
             events = self.polymarket.get_all_tradeable_events()
             print(f"1. FOUND {len(events)} EVENTS")
 
@@ -35,7 +49,6 @@ class Trader:
 
             print()
             filtered_markets = self.agent.filter_markets(markets)
-            pdb.set_trace()
             print(f"4. FILTERED {len(filtered_markets)} MARKETS")
 
             # TODO: use even more data to build even better models!

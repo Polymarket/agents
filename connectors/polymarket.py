@@ -25,7 +25,6 @@ from py_clob_client.clob_types import (
     MarketOrderArgs,
     OrderType,
     OrderBookSummary,
-    SignedOrder,
 )
 from py_clob_client.order_builder.constants import BUY
 
@@ -308,7 +307,7 @@ class Polymarket:
         nonce: str = str(round(time.time())),  # for cancellations
         side: str = "BUY",
         expiration: str = "0",  # timestamp after which order expires
-    ) -> SignedOrder:
+    ):
         signer = Signer(self.private_key)
         builder = OrderBuilder(self.exchange_address, self.chain_id, signer)
 

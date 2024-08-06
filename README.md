@@ -19,7 +19,7 @@ This repo is inteded for use with Python 3.9
 1. Clone the repository
 
    ```
-   git clone https://github.com/{username}/polymarket-agents.git`
+   git clone https://github.com/{username}/polymarket-agents.git
    cd polymarket-agents
    ```
 
