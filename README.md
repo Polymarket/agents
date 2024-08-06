@@ -158,6 +158,6 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 # Contact
 
-For any questions or inquiries, please contact name@polymarket.com.
+For any questions or inquiries, please contact liam@polymarket.com or reach out at www.greenestreet.xyz
 
 Enjoy using the CLI application! If you encounter any issues, feel free to open an issue on the repository.
