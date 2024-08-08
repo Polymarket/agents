@@ -344,7 +344,6 @@ class Polymarket:
         resp = self.client.post_order(signed_order, orderType=OrderType.FOK)
         print(resp)
         print("Done!")
-        # TODO: write trade history to a db!
         return resp
 
     def get_usdc_balance(self) -> float:
@@ -368,7 +367,7 @@ def test():
         api_key=os.getenv("CLOB_API_KEY"),
         api_secret=os.getenv("CLOB_SECRET"),
         api_passphrase=os.getenv("CLOB_PASS_PHRASE"),
-    )  # TODO: post /auth/api-key
+    )
     chain_id = AMOY
     client = ClobClient(host, key=key, chain_id=chain_id, creds=creds)
 
