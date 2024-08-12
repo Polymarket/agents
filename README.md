@@ -1,8 +1,8 @@
 # Polymarket Agents
 
-Polymarket Agents is an advanced developer framework and set of utilities for building AI agents for Polymarket. estimating outcomes in information market, or bots that can trade in Polymarkets.
+Polymarket Agents is a developer framework and set of utilities for building AI agents for Polymarket.
 
-This code is free and publicly available under MIT License open source license!
+This code is free and publicly available under MIT License open source license ([terms of service](#terms-of-service))!
 
 ## Features
 
@@ -99,7 +99,7 @@ Polymarket Agents connectors standardize data sources and order types.
 
 - `Chroma.py`: chroma DB for vectorizing news sources and other API data. Developers are able to add their own vector database implementations.
 
-- `Gamma.py`: defines `GammaMarketClient` class, which interfaces with the Polymarket Gamma API to fetch and parse market and event data. Methods to retrieve current and tradable markets, as well as defined information on specific markets and events.
+- `Gamma.py`: defines `GammaMarketClient` class, which interfaces with the Polymarket Gamma API to fetch and parse market and event metadata. Methods to retrieve current and tradable markets, as well as defined information on specific markets and events.
 
 ### Scripts
 
@@ -154,10 +154,14 @@ Please run pre-commit hooks before making contributions. To initialize them:
 
 # License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/Polymarket/agents/blob/main/LICENSE.md) file for details.
 
 # Contact
 
 For any questions or inquiries, please contact liam@polymarket.com or reach out at www.greenestreet.xyz
 
 Enjoy using the CLI application! If you encounter any issues, feel free to open an issue on the repository.
+
+# Terms of Service
+
+[Terms of Service](https://polymarket.com/tos) prohibit US persons and persons from certain other jurisdictions from trading on Polymarket (via UI & API and including agents developed by persons in restricted jurisdictions), although data and information is viewable globally.
