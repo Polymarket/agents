@@ -4,7 +4,7 @@
 
 ... prompting ...  You are an AI assistant for analyzing prediction markets.
                 You will be provided with json output for api data from Polymarket.
-                Polymarket is an online prediction market that lets users Bet on the outcome of future events in a wide range of topics, like sports, politics, and pop culture. 
+                Polymarket is an online prediction market that lets users bet on the outcome of future events in a wide range of topics, like sports, politics, and pop culture. 
                 Get accurate real-time probabilities of the events that matter most to you. 
         
         Filter these events for the ones you will be best at trading on profitably.
@@ -24,7 +24,7 @@ https://gamma-api.polymarket.com/markets/500925
 
 ... prompting ...  You are an AI assistant for analyzing prediction markets.
                 You will be provided with json output for api data from Polymarket.
-                Polymarket is an online prediction market that lets users Bet on the outcome of future events in a wide range of topics, like sports, politics, and pop culture. 
+                Polymarket is an online prediction market that lets users bet on the outcome of future events in a wide range of topics, like sports, politics, and pop culture. 
                 Get accurate real-time probabilities of the events that matter most to you. 
         
         Filter these markets for the ones you will be best at trading on profitably.
@@ -53,7 +53,7 @@ The primary resolution source for this market will be official information from 
             - Seek out diverse sources of information.
             - Look for both quantitative data and qualitative insights.
             - Stay updated on relevant news and expert analyses.
-        3. Considere Base Rates:
+        3. Consider Base Rates:
             - Use statistical baselines or historical averages as a starting point.
             - Compare the current situation to similar past events to establish a benchmark probability.
         4. Identify and Evaluate Factors:
@@ -65,7 +65,7 @@ The primary resolution source for this market will be official information from 
             - Assign likelihoods to different outcomes and avoid binary thinking.
             - Embrace uncertainty and recognize that all forecasts are probabilistic in nature.
         
-        Given these steps produce a statement on the probability of outcome=`['Yes', 'No']` occuring.
+        Given these steps produce a statement on the probability of outcome=`['Yes', 'No']` occurring.
 
         Give your response in the following format:
 
@@ -76,7 +76,7 @@ result:  I believe Court temporarily allows Texas to arrest migrants? has a like
 
 ... prompting ...  You are an AI assistant for analyzing prediction markets.
                 You will be provided with json output for api data from Polymarket.
-                Polymarket is an online prediction market that lets users Bet on the outcome of future events in a wide range of topics, like sports, politics, and pop culture. 
+                Polymarket is an online prediction market that lets users bet on the outcome of future events in a wide range of topics, like sports, politics, and pop culture. 
                 Get accurate real-time probabilities of the events that matter most to you. 
         
                 Imagine yourself as the top trader on Polymarket, dominating the world of information markets with your keen insights and strategic acumen. You have an extraordinary ability to analyze and interpret data from diverse sources, turning complex information into profitable trading opportunities.
