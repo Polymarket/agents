@@ -112,7 +112,7 @@ class GammaMarketClient:
             else:
                 events: list[PolymarketEvent] = []
                 for market_event_obj in data:
-                    events.append(self.parse_event(market_event_obj))
+                    events.append(self.parse_pydantic_event(market_event_obj))
                 return events
         else:
             raise Exception()
