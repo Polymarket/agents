@@ -41,7 +41,7 @@ class SimpleMarket(BaseModel):
     spread: float
     outcomes: str
     outcome_prices: str
-    clob_token_ids: Optional[str]
+    clob_token_ids: Optional[str] = None
 
 
 class ClobReward(BaseModel):
@@ -205,7 +205,6 @@ class SimpleEvent(BaseModel):
     active: bool
     closed: bool
     archived: bool
-    restricted: bool
     new: bool
     featured: bool
     restricted: bool
@@ -213,8 +212,8 @@ class SimpleEvent(BaseModel):
 
 
 class Source(BaseModel):
-    id: Optional[str]
-    name: Optional[str]
+    id: Optional[str] = None
+    name: Optional[str] = None
 
 
 class Article(BaseModel):

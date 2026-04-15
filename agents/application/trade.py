@@ -1,8 +1,16 @@
+import logging
+import shutil
+
+import httpx
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
 from agents.application.executor import Executor as Agent
 from agents.polymarket.gamma import GammaMarketClient as Gamma
 from agents.polymarket.polymarket import Polymarket
 
-import shutil
+logger = logging.getLogger(__name__)
+
+MAX_RETRIES = 3
 
 
 class Trader:
@@ -15,54 +23,59 @@ class Trader:
         self.clear_local_dbs()
 
     def clear_local_dbs(self) -> None:
-        try:
-            shutil.rmtree("local_db_events")
-        except:
-            pass
-        try:
-            shutil.rmtree("local_db_markets")
-        except:
-            pass
+        for db_dir in ("local_db_events", "local_db_markets"):
+            try:
+                shutil.rmtree(db_dir)
+            except FileNotFoundError:
+                pass
+            except OSError as e:
+                logger.warning("Failed to remove %s: %s", db_dir, e)
 
+    @retry(
+        stop=stop_after_attempt(MAX_RETRIES),
+        wait=wait_exponential(multiplier=1, min=2, max=30),
+        retry=retry_if_exception_type((
+            ConnectionError,
+            TimeoutError,
+            RuntimeError,
+            httpx.TimeoutException,
+            httpx.NetworkError,
+        )),
+        reraise=True,
+    )
     def one_best_trade(self) -> None:
         """
+        one_best_trade is a strategy that evaluates all events, markets, and orderbooks.
 
-        one_best_trade is a strategy that evaluates all events, markets, and orderbooks
-
-        leverages all available information sources accessible to the autonomous agent
-
-        then executes that trade without any human intervention
-
+        Leverages all available information sources accessible to the autonomous agent
+        then executes that trade without any human intervention.
         """
-        try:
-            self.pre_trade_logic()
+        self.pre_trade_logic()
 
-            events = self.polymarket.get_all_tradeable_events()
-            print(f"1. FOUND {len(events)} EVENTS")
+        events = self.polymarket.get_all_tradeable_events()
+        logger.info("1. FOUND %d EVENTS", len(events))
 
-            filtered_events = self.agent.filter_events_with_rag(events)
-            print(f"2. FILTERED {len(filtered_events)} EVENTS")
+        filtered_events = self.agent.filter_events_with_rag(events)
+        logger.info("2. FILTERED %d EVENTS", len(filtered_events))
 
-            markets = self.agent.map_filtered_events_to_markets(filtered_events)
-            print()
-            print(f"3. FOUND {len(markets)} MARKETS")
+        markets = self.agent.map_filtered_events_to_markets(filtered_events)
+        logger.info("3. FOUND %d MARKETS", len(markets))
 
-            print()
-            filtered_markets = self.agent.filter_markets(markets)
-            print(f"4. FILTERED {len(filtered_markets)} MARKETS")
+        filtered_markets = self.agent.filter_markets(markets)
+        logger.info("4. FILTERED %d MARKETS", len(filtered_markets))
 
-            market = filtered_markets[0]
-            best_trade = self.agent.source_best_trade(market)
-            print(f"5. CALCULATED TRADE {best_trade}")
+        if not filtered_markets:
+            logger.warning("No markets passed filtering — skipping trade")
+            return
 
-            amount = self.agent.format_trade_prompt_for_execution(best_trade)
-            # Please refer to TOS before uncommenting: polymarket.com/tos
-            # trade = self.polymarket.execute_market_order(market, amount)
-            # print(f"6. TRADED {trade}")
+        market = filtered_markets[0]
+        best_trade = self.agent.source_best_trade(market)
+        logger.info("5. CALCULATED TRADE %s", best_trade)
 
-        except Exception as e:
-            print(f"Error {e} \n \n Retrying")
-            self.one_best_trade()
+        amount = self.agent.format_trade_prompt_for_execution(best_trade)
+        # Please refer to TOS before uncommenting: polymarket.com/tos
+        # trade = self.polymarket.execute_market_order(market, amount)
+        # logger.info("6. TRADED %s", trade)
 
     def maintain_positions(self):
         pass

@@ -33,25 +33,6 @@ class Prompter:
         
         """
 
-    def prompts_polymarket(
-        self, data1: str, data2: str, market_question: str, outcome: str
-    ) -> str:
-        current_market_data = str(data1)
-        current_event_data = str(data2)
-        return f"""
-        You are an AI assistant for users of a prediction market called Polymarket.
-        Users want to place bets based on their beliefs of market outcomes such as political or sports events.
-        
-        Here is data for current Polymarket markets {current_market_data} and 
-        current Polymarket events {current_event_data}.
-
-        Help users identify markets to trade based on their interests or queries.
-        Provide specific information for markets including probabilities of outcomes.
-        Give your response in the following format:
-
-        I believe {market_question} has a likelihood {float} for outcome of {outcome}.
-        """
-
     def prompts_polymarket(self, data1: str, data2: str) -> str:
         current_market_data = str(data1)
         current_event_data = str(data2)

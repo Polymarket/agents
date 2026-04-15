@@ -1,0 +1,15 @@
+.git
+.gitignore
+.github
+.venv
+__pycache__
+*.pyc
+*.pyo
+.env
+.env.*
+!.env.example
+tests/
+docs/images/
+*.md
+!README.md
+.pre-commit-config.yaml

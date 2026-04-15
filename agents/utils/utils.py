@@ -1,4 +1,8 @@
 import json
+import logging
+from typing import Callable
+
+logger = logging.getLogger(__name__)
 
 
 def parse_camel_case(key) -> str:
@@ -25,14 +29,15 @@ def preprocess_market_object(market_object: dict) -> dict:
 
         if k in ["volume", "liquidity"]:
             description += f" This market has a current {k} of {v}."
-    print("\n\ndescription:", description)
+
+    logger.debug("Preprocessed description: %s", description)
 
     market_object["description"] = description
 
     return market_object
 
 
-def preprocess_local_json(file_path: str, preprocessor_function: function) -> None:
+def preprocess_local_json(file_path: str, preprocessor_function: Callable) -> None:
     with open(file_path, "r+") as open_file:
         data = json.load(open_file)
 
@@ -48,8 +53,6 @@ def preprocess_local_json(file_path: str, preprocessor_function: function) -> No
 
 
 def metadata_func(record: dict, metadata: dict) -> dict:
-    print("record:", record)
-    print("meta:", metadata)
     for k, v in record.items():
         metadata[k] = v
 

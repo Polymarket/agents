@@ -1,6 +1,15 @@
+import httpx
+import logging
+
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
 from agents.application.executor import Executor as Agent
 from agents.polymarket.gamma import GammaMarketClient as Gamma
 from agents.polymarket.polymarket import Polymarket
+
+logger = logging.getLogger(__name__)
+
+MAX_RETRIES = 3
 
 
 class Creator:
@@ -9,38 +18,42 @@ class Creator:
         self.gamma = Gamma()
         self.agent = Agent()
 
+    @retry(
+        stop=stop_after_attempt(MAX_RETRIES),
+        wait=wait_exponential(multiplier=1, min=2, max=30),
+        retry=retry_if_exception_type((
+            ConnectionError,
+            TimeoutError,
+            RuntimeError,
+            httpx.TimeoutException,
+            httpx.NetworkError,
+        )),
+        reraise=True,
+    )
     def one_best_market(self):
         """
-
-        one_best_trade is a strategy that evaluates all events, markets, and orderbooks
-
-        leverages all available information sources accessible to the autonomous agent
-
-        then executes that trade without any human intervention
-
+        Evaluates all events, markets, and orderbooks using the autonomous agent,
+        then proposes a new market idea.
         """
-        try:
-            events = self.polymarket.get_all_tradeable_events()
-            print(f"1. FOUND {len(events)} EVENTS")
+        events = self.polymarket.get_all_tradeable_events()
+        logger.info("1. FOUND %d EVENTS", len(events))
 
-            filtered_events = self.agent.filter_events_with_rag(events)
-            print(f"2. FILTERED {len(filtered_events)} EVENTS")
+        filtered_events = self.agent.filter_events_with_rag(events)
+        logger.info("2. FILTERED %d EVENTS", len(filtered_events))
 
-            markets = self.agent.map_filtered_events_to_markets(filtered_events)
-            print()
-            print(f"3. FOUND {len(markets)} MARKETS")
+        markets = self.agent.map_filtered_events_to_markets(filtered_events)
+        logger.info("3. FOUND %d MARKETS", len(markets))
 
-            print()
-            filtered_markets = self.agent.filter_markets(markets)
-            print(f"4. FILTERED {len(filtered_markets)} MARKETS")
+        filtered_markets = self.agent.filter_markets(markets)
+        logger.info("4. FILTERED %d MARKETS", len(filtered_markets))
 
-            best_market = self.agent.source_best_market_to_create(filtered_markets)
-            print(f"5. IDEA FOR NEW MARKET {best_market}")
-            return best_market
+        if not filtered_markets:
+            logger.warning("No markets passed filtering — skipping")
+            return None
 
-        except Exception as e:
-            print(f"Error {e} \n \n Retrying")
-            self.one_best_market()
+        best_market = self.agent.source_best_market_to_create(filtered_markets)
+        logger.info("5. IDEA FOR NEW MARKET %s", best_market)
+        return best_market
 
     def maintain_positions(self):
         pass

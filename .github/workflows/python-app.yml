@@ -13,8 +13,27 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  lint:
+    runs-on: ubuntu-latest
 
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.9"
+    - name: Install lint tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install black ruff
+    - name: Lint with black (check only)
+      run: |
+        black --check --diff .
+    - name: Lint with ruff
+      run: |
+        ruff check .
+
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,11 +45,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install black pytest
+        pip install pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with black
+    - name: Run tests
       run: |
-        black .
-    - name: Test with unittest
-      run: |
-        python -m unittest discover
+        python -m pytest tests/ -v

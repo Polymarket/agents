@@ -1,10 +1,10 @@
-import os
-import json
 import ast
+import json
+import logging
+import math
+import os
 import re
 from typing import List, Dict, Any
-
-import math
 
 from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, SystemMessage
@@ -15,6 +15,8 @@ from agents.connectors.chroma import PolymarketRAG as Chroma
 from agents.utils.objects import SimpleEvent, SimpleMarket
 from agents.application.prompts import Prompter
 from agents.polymarket.polymarket import Polymarket
+
+logger = logging.getLogger(__name__)
 
 def retain_keys(data, keys_to_retain):
     if isinstance(data, dict):
@@ -29,16 +31,38 @@ def retain_keys(data, keys_to_retain):
         return data
 
 class Executor:
-    def __init__(self, default_model='gpt-3.5-turbo-16k') -> None:
+    def __init__(
+        self,
+        default_model: str = None,
+        api_key: str = None,
+        base_url: str = None,
+    ) -> None:
         load_dotenv()
-        max_token_model = {'gpt-3.5-turbo-16k':15000, 'gpt-4-1106-preview':95000}
-        self.token_limit = max_token_model.get(default_model)
         self.prompter = Prompter()
-        self.openai_api_key = os.getenv("OPENAI_API_KEY")
-        self.llm = ChatOpenAI(
-            model=default_model, #gpt-3.5-turbo"
-            temperature=0,
-        )
+
+        # Support any OpenAI-compatible provider via env vars or args
+        self.api_key = api_key or os.getenv("OPENAI_API_KEY") or os.getenv("LLM_API_KEY")
+        self.base_url = base_url or os.getenv("LLM_BASE_URL")
+        self.model = default_model or os.getenv("LLM_MODEL", "gpt-3.5-turbo-16k")
+
+        llm_kwargs = {
+            "model": self.model,
+            "temperature": 0,
+            "api_key": self.api_key,
+        }
+        if self.base_url:
+            llm_kwargs["base_url"] = self.base_url
+
+        self.llm = ChatOpenAI(**llm_kwargs)
+
+        max_token_model = {
+            "gpt-3.5-turbo-16k": 15000,
+            "gpt-4-1106-preview": 95000,
+            "gpt-4o-mini": 125000,
+            "gpt-4o": 125000,
+        }
+        self.token_limit = max_token_model.get(self.model, 15000)
+
         self.gamma = Gamma()
         self.chroma = Chroma()
         self.polymarket = Polymarket()
@@ -98,7 +122,7 @@ class Executor:
         else:
             # If exceeding limit, process in chunks
             chunk_size = len(combined_data) // ((total_tokens // token_limit) + 1)
-            print(f'total tokens {total_tokens} exceeding llm capacity, now will split and answer')
+            logger.info('total tokens %d exceeding llm capacity, now will split and answer', total_tokens)
             group_size = (total_tokens // token_limit) + 1 # 3 is safe factor
             keys_no_meaning = ['image','pagerDutyNotificationEnabled','resolvedBy','endDate','clobTokenIds','negRiskMarketID','conditionId','updatedAt','startDate']
             useful_keys = ['id','questionID','description','liquidity','clobTokenIds','outcomes','outcomePrices','volume','startDate','endDate','question','questionID','events']
@@ -129,9 +153,7 @@ class Executor:
 
     def filter_events_with_rag(self, events: "list[SimpleEvent]") -> str:
         prompt = self.prompter.filter_events()
-        print()
-        print("... prompting ... ", prompt)
-        print()
+        logger.info("... prompting ... %s", prompt)
         return self.chroma.events(events, prompt)
 
     def map_filtered_events_to_markets(
@@ -149,9 +171,7 @@ class Executor:
 
     def filter_markets(self, markets) -> "list[tuple]":
         prompt = self.prompter.filter_markets()
-        print()
-        print("... prompting ... ", prompt)
-        print()
+        logger.info("... prompting ... %s", prompt)
         return self.chroma.markets(markets, prompt)
 
     def source_best_trade(self, market_object) -> str:
@@ -163,36 +183,55 @@ class Executor:
         description = market_document["page_content"]
 
         prompt = self.prompter.superforecaster(question, description, outcomes)
-        print()
-        print("... prompting ... ", prompt)
-        print()
+        logger.info("... prompting superforecaster: %s", prompt)
         result = self.llm.invoke(prompt)
         content = result.content
+        logger.info("Superforecaster result: %s", content)
 
-        print("result: ", content)
-        print()
         prompt = self.prompter.one_best_trade(content, outcomes, outcome_prices)
-        print("... prompting ... ", prompt)
-        print()
+        logger.info("... prompting trade: %s", prompt)
         result = self.llm.invoke(prompt)
         content = result.content
-
-        print("result: ", content)
-        print()
+        logger.info("Trade result: %s", content)
         return content
 
     def format_trade_prompt_for_execution(self, best_trade: str) -> float:
+        """Parse LLM trade output into a safe USDC amount.
+
+        Expected format: 'price:0.5, size:0.1, side:BUY,'
+        Returns: size_fraction * usdc_balance
+        """
         data = best_trade.split(",")
-        # price = re.findall("\d+\.\d+", data[0])[0]
-        size = re.findall("\d+\.\d+", data[1])[0]
+        if len(data) < 2:
+            raise ValueError(
+                f"Trade output has unexpected format (need >=2 comma-separated parts): {best_trade!r}"
+            )
+
+        size_matches = re.findall(r"\d+\.?\d*", data[1])
+        if not size_matches:
+            raise ValueError(
+                f"Could not extract size from trade output: {data[1]!r}"
+            )
+
+        size = float(size_matches[0])
+        if not (0 < size <= 1):
+            raise ValueError(
+                f"Trade size {size} out of safe range (0, 1] — refusing to execute"
+            )
+
         usdc_balance = self.polymarket.get_usdc_balance()
-        return float(size) * usdc_balance
+        amount = size * usdc_balance
+        logger.info(
+            "Trade size fraction: %.4f, USDC balance: %.2f, order amount: %.2f",
+            size,
+            usdc_balance,
+            amount,
+        )
+        return amount
 
     def source_best_market_to_create(self, filtered_markets) -> str:
         prompt = self.prompter.create_new_market(filtered_markets)
-        print()
-        print("... prompting ... ", prompt)
-        print()
+        logger.info("... prompting market creation: %s", prompt)
         result = self.llm.invoke(prompt)
         content = result.content
         return content

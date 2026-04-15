@@ -1,25 +1,18 @@
 # core polymarket api
 # https://github.com/Polymarket/py-clob-client/tree/main/examples
 
-import os
-import pdb
-import time
 import ast
-import requests
+import logging
+import os
+import time
 
+import httpx
 from dotenv import load_dotenv
-
 from web3 import Web3
 from web3.constants import MAX_INT
 from web3.middleware import geth_poa_middleware
 
-import httpx
 from py_clob_client.client import ClobClient
-from py_clob_client.clob_types import ApiCreds
-from py_clob_client.constants import AMOY, POLYGON
-from py_order_utils.builders import OrderBuilder
-from py_order_utils.model import OrderData
-from py_order_utils.signer import Signer
 from py_clob_client.clob_types import (
     OrderArgs,
     MarketOrderArgs,
@@ -27,10 +20,17 @@ from py_clob_client.clob_types import (
     OrderBookSummary,
 )
 from py_clob_client.order_builder.constants import BUY
+from py_order_utils.builders import OrderBuilder
+from py_order_utils.model import OrderData
+from py_order_utils.signer import Signer
 
 from agents.utils.objects import SimpleMarket, SimpleEvent
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
+
+HTTP_TIMEOUT = 30.0  # seconds
 
 
 class Polymarket:
@@ -44,6 +44,7 @@ class Polymarket:
 
         self.chain_id = 137  # POLYGON
         self.private_key = os.getenv("POLYGON_WALLET_PRIVATE_KEY")
+
         self.polygon_rpc = "https://polygon-rpc.com"
         self.w3 = Web3(Web3.HTTPProvider(self.polygon_rpc))
 
@@ -66,16 +67,23 @@ class Polymarket:
             address=self.ctf_address, abi=self.erc1155_set_approval
         )
 
-        self._init_api_keys()
         self._init_approvals(False)
+        self._client_initialized = False
 
-    def _init_api_keys(self) -> None:
+    def _ensure_client(self) -> None:
+        """Lazily initialize CLOB client only when trading operations are needed."""
+        if self._client_initialized:
+            return
+        if not self.private_key:
+            raise ValueError(
+                "POLYGON_WALLET_PRIVATE_KEY is required for trading operations"
+            )
         self.client = ClobClient(
             self.clob_url, key=self.private_key, chain_id=self.chain_id
         )
         self.credentials = self.client.create_or_derive_api_creds()
         self.client.set_api_creds(self.credentials)
-        # print(self.credentials)
+        self._client_initialized = True
 
     def _init_approvals(self, run: bool = False) -> None:
         if not run:
@@ -102,7 +110,7 @@ class Polymarket:
         usdc_approve_tx_receipt = web3.eth.wait_for_transaction_receipt(
             send_usdc_approve_tx, 600
         )
-        print(usdc_approve_tx_receipt)
+        logger.info("USDC approve receipt (CTF Exchange): %s", usdc_approve_tx_receipt)
 
         nonce = web3.eth.get_transaction_count(pub_key)
 
@@ -118,7 +126,7 @@ class Polymarket:
         ctf_approval_tx_receipt = web3.eth.wait_for_transaction_receipt(
             send_ctf_approval_tx, 600
         )
-        print(ctf_approval_tx_receipt)
+        logger.info("CTF approval receipt: %s", ctf_approval_tx_receipt)
 
         nonce = web3.eth.get_transaction_count(pub_key)
 
@@ -135,7 +143,7 @@ class Polymarket:
         usdc_approve_tx_receipt = web3.eth.wait_for_transaction_receipt(
             send_usdc_approve_tx, 600
         )
-        print(usdc_approve_tx_receipt)
+        logger.info("USDC approve receipt (Neg Risk CTF): %s", usdc_approve_tx_receipt)
 
         nonce = web3.eth.get_transaction_count(pub_key)
 
@@ -151,7 +159,7 @@ class Polymarket:
         ctf_approval_tx_receipt = web3.eth.wait_for_transaction_receipt(
             send_ctf_approval_tx, 600
         )
-        print(ctf_approval_tx_receipt)
+        logger.info("CTF approval receipt (Neg Risk): %s", ctf_approval_tx_receipt)
 
         nonce = web3.eth.get_transaction_count(pub_key)
 
@@ -168,7 +176,7 @@ class Polymarket:
         usdc_approve_tx_receipt = web3.eth.wait_for_transaction_receipt(
             send_usdc_approve_tx, 600
         )
-        print(usdc_approve_tx_receipt)
+        logger.info("USDC approve receipt (Neg Risk Adapter): %s", usdc_approve_tx_receipt)
 
         nonce = web3.eth.get_transaction_count(pub_key)
 
@@ -184,19 +192,18 @@ class Polymarket:
         ctf_approval_tx_receipt = web3.eth.wait_for_transaction_receipt(
             send_ctf_approval_tx, 600
         )
-        print(ctf_approval_tx_receipt)
+        logger.info("CTF approval receipt (Neg Risk Adapter): %s", ctf_approval_tx_receipt)
 
     def get_all_markets(self) -> "list[SimpleMarket]":
         markets = []
-        res = httpx.get(self.gamma_markets_endpoint)
+        res = httpx.get(self.gamma_markets_endpoint, timeout=HTTP_TIMEOUT)
         if res.status_code == 200:
             for market in res.json():
                 try:
                     market_data = self.map_api_to_market(market)
                     markets.append(SimpleMarket(**market_data))
-                except Exception as e:
-                    print(e)
-                    pass
+                except (KeyError, ValueError, TypeError) as e:
+                    logger.warning("Skipping malformed market data: %s", e)
         return markets
 
     def filter_markets_for_trading(self, markets: "list[SimpleMarket]"):
@@ -208,7 +215,7 @@ class Polymarket:
 
     def get_market(self, token_id: str) -> SimpleMarket:
         params = {"clob_token_ids": token_id}
-        res = httpx.get(self.gamma_markets_endpoint, params=params)
+        res = httpx.get(self.gamma_markets_endpoint, params=params, timeout=HTTP_TIMEOUT)
         if res.status_code == 200:
             data = res.json()
             market = data[0]
@@ -237,17 +244,15 @@ class Polymarket:
 
     def get_all_events(self) -> "list[SimpleEvent]":
         events = []
-        res = httpx.get(self.gamma_events_endpoint)
+        res = httpx.get(self.gamma_events_endpoint, timeout=HTTP_TIMEOUT)
         if res.status_code == 200:
-            print(len(res.json()))
+            logger.info("Fetched %d events from API", len(res.json()))
             for event in res.json():
                 try:
-                    print(1)
                     event_data = self.map_api_to_event(event)
                     events.append(SimpleEvent(**event_data))
-                except Exception as e:
-                    print(e)
-                    pass
+                except (KeyError, ValueError, TypeError) as e:
+                    logger.warning("Skipping malformed event data: %s", e)
         return events
 
     def map_api_to_event(self, event) -> SimpleEvent:
@@ -287,6 +292,7 @@ class Polymarket:
         return self.filter_events_for_trading(all_events)
 
     def get_sampling_simplified_markets(self) -> "list[SimpleEvent]":
+        self._ensure_client()
         markets = []
         raw_sampling_simplified_markets = self.client.get_sampling_simplified_markets()
         for raw_market in raw_sampling_simplified_markets["data"]:
@@ -296,9 +302,11 @@ class Polymarket:
         return markets
 
     def get_orderbook(self, token_id: str) -> OrderBookSummary:
+        self._ensure_client()
         return self.client.get_order_book(token_id)
 
     def get_orderbook_price(self, token_id: str) -> float:
+        self._ensure_client()
         return float(self.client.get_price(token_id))
 
     def get_address_for_private_key(self):
@@ -334,28 +342,29 @@ class Polymarket:
         return order
 
     def execute_order(self, price, size, side, token_id) -> str:
+        self._ensure_client()
         return self.client.create_and_post_order(
             OrderArgs(price=price, size=size, side=side, token_id=token_id)
         )
 
     def execute_market_order(self, market, amount) -> str:
+        self._ensure_client()
         token_id = ast.literal_eval(market[0].dict()["metadata"]["clob_token_ids"])[1]
         order_args = MarketOrderArgs(
             token_id=token_id,
             amount=amount,
         )
         signed_order = self.client.create_market_order(order_args)
-        print("Execute market order... signed_order ", signed_order)
+        logger.info("Execute market order... signed_order: %s", signed_order)
         resp = self.client.post_order(signed_order, orderType=OrderType.FOK)
-        print(resp)
-        print("Done!")
+        logger.info("Order posted: %s", resp)
         return resp
 
     def get_usdc_balance(self) -> float:
         balance_res = self.usdc.functions.balanceOf(
             self.get_address_for_private_key()
         ).call()
-        return float(balance_res / 10e5)
+        return float(balance_res / 10**6)
 
 
 def test():
@@ -416,18 +425,16 @@ def gamma():
                     "outcome_b_price": str(market["outcomePrices"][1]),
                 }
                 markets.append(SimpleMarket(**market_data))
-            except Exception as err:
-                print(f"error {err} for market {id}")
-        pdb.set_trace()
+            except (KeyError, ValueError, TypeError) as err:
+                logger.warning("Error parsing market %s: %s", market.get("id"), err)
     else:
-        raise Exception()
+        raise RuntimeError(f"Gamma API returned HTTP {code}")
 
 
 def main():
-    # auth()
-    # test()
-    # gamma()
-    print(Polymarket().get_all_events())
+    load_dotenv()
+    p = Polymarket()
+    logger.info("All events: %s", p.get_all_events())
 
 
 if __name__ == "__main__":
