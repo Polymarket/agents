@@ -185,6 +185,12 @@ Please run pre-commit hooks before making contributions. To initialize them:
 - [Langchain](https://github.com/langchain-ai/langchain): Utility for building context-aware reasoning applications
 - [Chroma](https://docs.trychroma.com/getting-started): Chroma is an AI-native open-source vector database
 
+# Community Agents
+
+Autonomous agents built on Polymarket by the community:
+
+- [DeepBlue](https://github.com/ERROR403agent/elizaos-plugin-deepblue): Autonomous 5-min BTC/ETH/SOL/XRP trading agent. Trades crypto up/down markets every 5 minutes using real-time Binance websocket signals + Polymarket CLOB. Live since Feb 2026. API: https://deepbluebase.xyz
+
 # Prediction markets reading
 
 - Prediction Markets: Bottlenecks and the Next Major Unlocks, Mikey 0x: https://mirror.xyz/1kx.eth/jnQhA56Kx9p3RODKiGzqzHGGEODpbskivUUNdd7hwh0
